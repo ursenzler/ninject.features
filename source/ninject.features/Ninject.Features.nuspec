@@ -13,5 +13,8 @@
     <releaseNotes>Initial release</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>Ninject</tags>
+    <dependencies>
+      <dependency id="Ninject" version="[3,4)" />
+    </dependencies>
   </metadata>
 </package>

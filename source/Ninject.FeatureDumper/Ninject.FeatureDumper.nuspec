@@ -13,5 +13,9 @@
     <releaseNotes>Initial release.</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>Ninject Ninject.Features</tags>
+    <dependencies>
+      <dependency id="Ninject" version="[3,4)" />
+      <dependency id="Ninject.Features" version="[,1)" />
+    </dependencies>
   </metadata>
 </package>
