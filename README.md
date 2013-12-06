@@ -120,3 +120,20 @@ Example:
 ```
 
 The infrastructure module is defined in both sub features, but the module is only loaded once by the `FeatureModuleLoader`.
+
+Automatic documentation
+-----------------------
+
+When you build up your applications using features, you can use the Feature dumper to visualize the Feature hierarchy using yEd (http://www.yworks.com/en/products_yed_about.html)
+
+![alt text](https://github.com/ursenzler/ninject.features/raw/master/documentation/features.png "Logo Title Text 1")
+
+
+NuGet package
+-------------
+
+**Ninject.Features**
+Currently there is only an alpha release available from our TeamCity server at https://teamcity.bbv.ch/guestAuth/app/nuget/v1/FeedService.svc/
+
+**Ninject.FeatureDumper**
+Currently there is only an alpha release available from our TeamCity server at https://teamcity.bbv.ch/guestAuth/app/nuget/v1/FeedService.svc/
