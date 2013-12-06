@@ -11,6 +11,8 @@
     <AssemblyName>Ninject.FeatureDumper</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,6 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Appccelerate.Fundamentals">
+      <HintPath>..\packages\Appccelerate.Fundamentals.2.0.98-alpha\lib\portable-windows8+net45\Appccelerate.Fundamentals.dll</HintPath>
+    </Reference>
+    <Reference Include="Appccelerate.IO">
+      <HintPath>..\packages\Appccelerate.IO.2.0.98-alpha\lib\Net45\Appccelerate.IO.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,14 +49,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyLoader.cs" />
+    <Compile Include="AssemblyResolveHandler.cs" />
+    <Compile Include="CommandLineArguments.cs" />
+    <Compile Include="FeatureProcessor.cs" />
+    <Compile Include="Features.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reference.cs" />
+    <Compile Include="TgfWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Ninject.FeatureDumper.nuspec">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ninject.features\Ninject.Features.csproj">
@@ -67,6 +83,7 @@ copy $(TargetDir)Ninject.dll $(TargetDir)package\tools
 copy $(TargetDir)Ninject.FeatureDumper.exe .config $(TargetDir)package\tools
 copy $(TargetDir)Ninject.Features.dll $(TargetDir)package\tools</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -1,155 +1,81 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//-------------------------------------------------------------------------------
+// <copyright file="Program.cs" company="Appccelerate">
+//   Copyright (c) 2008-2013
+//
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//       http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License.
+// </copyright>
+//-------------------------------------------------------------------------------
 
-namespace FeatureDumper
+namespace Ninject.FeatureDumper
 {
+    using System;
     using System.Diagnostics;
-    using System.IO;
-    using System.Management.Instrumentation;
-    using System.Reflection;
 
-    using Ninject.Features;
+    using Appccelerate.IO;
 
-    class Program
+    public class Program
     {
-        private static string assemblyFolder;
-
-        private static Assembly MyResolveEventHandler(object sender, ResolveEventArgs args)
+        public static void Main(string[] args)
         {
-            var assembly = Assembly.LoadFrom(Path.Combine(assemblyFolder, args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll"));
+            try
+            {
+                var commandLineArguments = ParseCommandLineArguments(args);
 
-            return assembly;
+                var assemblyLoader = new AssemblyLoader();
+                var assemblies = assemblyLoader.LoadAssemblies(commandLineArguments.AssemblyFolder);
+
+                var featureProcessor = new FeatureProcessor();
+                Features features = featureProcessor.ProcessAssemblies(assemblies);
+
+                var tgfWriter = new TgfWriter();
+                tgfWriter.WriteTgfFile(commandLineArguments.OutputPath, features);
+
+                StartYEd(commandLineArguments.OutputPath);
+
+                Console.WriteLine("done output file is " + commandLineArguments.OutputPath);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("failed with exception:");
+                Console.WriteLine(exception);
+            }
         }
 
-        static void Main(string[] args)
+        private static CommandLineArguments ParseCommandLineArguments(string[] args)
         {
             if (args.Length != 2)
             {
                 Console.WriteLine("usage: FeatureDumper <outputFile .tgf> <folder with assemblies>");
-                return;
+                return CommandLineArguments.CreateFailed();
             }
 
-            string outputPath = args[0];
-            assemblyFolder = args[1];
+            return CommandLineArguments.CreateSuccessful(
+                args[0],
+                args[1]);
+        }
 
-            Console.WriteLine("loading assemblies from " + assemblyFolder);
+        private static void StartYEd(AbsoluteFilePath outputPath)
+        {
+            var yEd = new Process
+                      {
+                          StartInfo =
+                          {
+                              FileName = @"C:\Program Files (x86)\yWorks\yEd\yEd.exe",
+                              Arguments = outputPath
+                          }
+                      };
 
-            var assemblyPaths = Directory.EnumerateFiles(assemblyFolder, "*.exe").Union(Directory.EnumerateFiles(assemblyFolder, "*.dll"));
-
-            Console.WriteLine("loading assemblies;");
-            foreach (var assemblyPath in assemblyPaths)
-            {
-                Console.WriteLine(assemblyPath);
-            }
-
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.AssemblyResolve += new ResolveEventHandler(MyResolveEventHandler);
-
-
-            IEnumerable<Assembly> assemblies = assemblyPaths.Select(Assembly.LoadFile).ToList();
-
-
-
-            foreach (Assembly assembly in assemblies)
-            {
-                AddAssemblies(assembly, loadedAssemblies);
-            }
-
-            foreach (Assembly assembly in assemblies)
-            {
-                ProcessAssembly(assembly);
-            }
-
-            using (StreamWriter writer = new StreamWriter(outputPath))
-            {
-                List<Type> list = new List<Type>(allFeatures);
-                foreach (var type in list)
-                {
-                    writer.WriteLine(list.IndexOf(type) + " " + type.Name);
-                }
-
-                writer.WriteLine("#");
-
-                foreach (var dependency in chain)
-                {
-                    writer.WriteLine(list.IndexOf(dependency.Item1) + " " + list.IndexOf(dependency.Item2));
-                }
-            }
-
-            Process yEd = new Process();
-            yEd.StartInfo.FileName = @"C:\Program Files (x86)\yWorks\yEd\yEd.exe";
-            yEd.StartInfo.Arguments = outputPath;
             yEd.Start();
-
-            Console.WriteLine("done output file is " + outputPath);
-        }
-
-        static HashSet<Tuple<Type, Type>> chain = new HashSet<Tuple<Type, Type>>();
-        static HashSet<Type> allFeatures = new HashSet<Type>();
-
-        private static void ProcessAssembly(Assembly assembly)
-        {
-            var features = assembly.GetExportedTypes().Where(type => type.IsSubclassOf(typeof(Feature)));
-
-            foreach (Type feature in features)
-            {
-                ProcessFeature(feature);
-            }
-        }
-
-        private static void ProcessFeature(Type feature)
-        {
-            Console.WriteLine("found feature " + feature.Name);
-
-            var constructor = feature.GetConstructors().OrderBy(c => c.GetParameters().Length).First();
-
-            object[] arguments = new object[constructor.GetParameters().Length];
-
-            var instance = (Feature)Activator.CreateInstance(feature, arguments);
-
-            allFeatures.Add(feature);
-
-            IList<Feature> neededFeatures = instance.NeededFeatures.ToList();
-            foreach (Feature neededFeature in neededFeatures)
-            {
-                Console.WriteLine("needed features:");
-                Console.WriteLine("- " + neededFeature.GetType().Name);
-
-                chain.Add(new Tuple<Type, Type>(feature, neededFeature.GetType()));
-
-                ProcessFeature(neededFeature.GetType());
-            }
-        }
-
-        static List<Assembly> loadedAssemblies = new List<Assembly>();
-
-        static void AddAssemblies(Assembly current, List<Assembly> assemblies)
-        {
-            if (assemblies.Contains(current))
-            {
-                return;
-            }
-
-            assemblies.Add(current);
-
-            foreach (var assemblyName in current.GetReferencedAssemblies())
-            {
-                try
-                {
-                    var assembly = Assembly.Load(assemblyName);
-
-                    Console.WriteLine("loaded assembly " + current.FullName);
-
-                    AddAssemblies(assembly, assemblies);
-                }
-                catch
-                {
-                    Console.WriteLine("skipping assembly because it is not found: " + assemblyName.Name);
-                }
-            }
         }
     }
 }
