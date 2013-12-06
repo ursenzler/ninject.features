@@ -20,15 +20,12 @@ namespace Ninject.Features.Facts
 {
     using System.Collections.Generic;
     using System.Linq;
-
     using FakeItEasy;
-
     using FluentAssertions;
-
     using Ninject.Modules;
+    using NUnit.Framework;
 
-    using Xunit;
-
+    [TestFixture]
     public class FeatureModuleLoaderFacts
     {
         private FeatureModuleLoader testee;
@@ -49,7 +46,7 @@ namespace Ninject.Features.Facts
             this.testee = new FeatureModuleLoader(this.kernel);
         }
 
-        [Fact]
+        [Test]
         public void CollectsAllBindingsAndBindsThemDistinctOnKernel()
         {
             IEnumerable<INinjectModule> loadedModules = null;
@@ -84,7 +81,7 @@ namespace Ninject.Features.Facts
                 .And.HaveCount(4);
         }
 
-        [Fact]
+        [Test]
         public void ExecutesAllDistinctDependencies()
         {
             var dependencyA = new DependencyA();
