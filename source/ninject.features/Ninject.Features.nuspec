@@ -9,7 +9,7 @@
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
     <projectUrl>http://github.com/ursenzler/ninject.features</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
+    <description>Adds feature support to Ninject.</description>
     <releaseNotes>Initial release</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>Ninject</tags>
