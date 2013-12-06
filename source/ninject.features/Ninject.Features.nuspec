@@ -3,9 +3,9 @@
   <metadata>
     <id>Ninject.Features</id>
     <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <title>Ninject.Features</title>
+    <authors>Urs Enzler</authors>
+    <owners>Urs Enzler</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
     <projectUrl>http://github.com/ursenzler/ninject.features</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
