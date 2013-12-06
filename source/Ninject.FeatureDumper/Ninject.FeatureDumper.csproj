@@ -46,6 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Ninject.FeatureDumper.nuspec">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ninject.features\Ninject.Features.csproj">
@@ -54,6 +57,16 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir $(TargetDir)package
+mkdir $(TargetDir)package\tools
+
+copy $(TargetDir)Ninject.FeatureDumper.nuspec $(TargetDir)package
+copy $(TargetDir)Ninject.FeatureDumper.exe $(TargetDir)package\tools
+copy $(TargetDir)Ninject.dll $(TargetDir)package\tools
+copy $(TargetDir)Ninject.FeatureDumper.exe .config $(TargetDir)package\tools
+copy $(TargetDir)Ninject.Features.dll $(TargetDir)package\tools</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
