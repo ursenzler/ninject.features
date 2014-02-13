@@ -68,7 +68,7 @@ namespace Ninject.Features
         protected IEnumerable<INinjectModule> GetAssemblyNinjectModules(Assembly assembly)
         {
             return assembly.GetExportedTypes().Where(t =>
-                typeof(NinjectModule).IsAssignableFrom(t) &&
+                typeof(INinjectModule).IsAssignableFrom(t) &&
                 !t.IsAbstract &&
                 !t.IsInterface &&
                 t.GetConstructor(Type.EmptyTypes) != null)

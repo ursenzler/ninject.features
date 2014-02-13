@@ -48,7 +48,7 @@ namespace Ninject.Features
             this.kernel.Load(extensions);
         }
 
-        private void LoadModulesOntoKernel(IEnumerable<NinjectModule> ninjectModules)
+        private void LoadModulesOntoKernel(IEnumerable<INinjectModule> ninjectModules)
         {
             this.kernel.Load(ninjectModules);
         }
@@ -64,7 +64,7 @@ namespace Ninject.Features
         private class Processor
         {
             private readonly List<Type> moduleTypes = new List<Type>();
-            private readonly List<NinjectModule> modules = new List<NinjectModule>();
+            private readonly List<INinjectModule> modules = new List<INinjectModule>();
             private readonly List<Type> dependencyTypes = new List<Type>();
             private readonly List<Dependency> dependencies = new List<Dependency>();
             private readonly List<INinjectModule> extensions = new List<INinjectModule>();
@@ -105,7 +105,7 @@ namespace Ninject.Features
 
             private void AddModulesFrom(Feature feature)
             {
-                foreach (NinjectModule module in feature.Modules)
+                foreach (INinjectModule module in feature.Modules)
                 {
                     if (!this.moduleTypes.Contains(module.GetType()))
                     {
@@ -145,14 +145,14 @@ namespace Ninject.Features
 
         private class Result
         {
-            public Result(IEnumerable<NinjectModule> modules, IEnumerable<Dependency> dependencies, IEnumerable<INinjectModule> extensions)
+            public Result(IEnumerable<INinjectModule> modules, IEnumerable<Dependency> dependencies, IEnumerable<INinjectModule> extensions)
             {
                 this.Extensions = extensions;
                 this.Modules = modules;
                 this.Dependencies = dependencies;
             }
 
-            public IEnumerable<NinjectModule> Modules { get; private set; }
+            public IEnumerable<INinjectModule> Modules { get; private set; }
 
             public IEnumerable<Dependency> Dependencies { get; private set; }
 
