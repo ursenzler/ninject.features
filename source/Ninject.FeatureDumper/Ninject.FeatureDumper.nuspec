@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Allows to create yEd diagrams automatically from Ninject features built with Ninject.Features.</description>
     <releaseNotes>Initial release.</releaseNotes>
-    <copyright>Copyright 2013</copyright>
+    <copyright>Copyright 2013-2014</copyright>
     <tags>Ninject Ninject.Features</tags>
   </metadata>
 </package>
