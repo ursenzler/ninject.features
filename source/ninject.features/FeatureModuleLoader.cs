@@ -18,7 +18,6 @@
 
 namespace Ninject.Features
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -63,9 +62,7 @@ namespace Ninject.Features
 
         private class Processor
         {
-            private readonly List<Type> moduleTypes = new List<Type>();
             private readonly List<INinjectModule> modules = new List<INinjectModule>();
-            private readonly List<Type> dependencyTypes = new List<Type>();
             private readonly List<Dependency> dependencies = new List<Dependency>();
             private readonly List<INinjectModule> extensions = new List<INinjectModule>();
 
@@ -107,10 +104,8 @@ namespace Ninject.Features
             {
                 foreach (INinjectModule module in feature.Modules)
                 {
-                    if (!this.moduleTypes.Contains(module.GetType()))
+                    if (this.NotAlreadyKnownModule(module))
                     {
-                        this.moduleTypes.Add(module.GetType());
-
                         this.modules.Add(module);
                     }
                 }
@@ -120,10 +115,8 @@ namespace Ninject.Features
             {
                 foreach (Dependency dependency in feature.Dependencies)
                 {
-                    if (!this.dependencyTypes.Contains(dependency.GetType()))
+                    if (this.NotAlreadyKnownDepedency(dependency))
                     {
-                        this.dependencyTypes.Add(dependency.GetType());
-
                         this.dependencies.Add(dependency);
                     }
                 }
@@ -140,6 +133,16 @@ namespace Ninject.Features
             private bool NotAlreadyKnownExtension(INinjectModule extension)
             {
                 return this.extensions.All(knownExtension => knownExtension.GetType() != extension.GetType());
+            }
+
+            private bool NotAlreadyKnownModule(INinjectModule module)
+            {
+                return this.modules.All(knownModule => knownModule.GetType() != module.GetType());
+            }
+
+            private bool NotAlreadyKnownDepedency(Dependency dependency)
+            {
+                return this.dependencies.All(knownDependency => knownDependency.GetType() != dependency.GetType());
             }
         }
 
