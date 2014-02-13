@@ -48,6 +48,14 @@ Example:
 
     public class MyFeature : Feature
     {
+        public override IEnumerable<INinjectModule> NeededExtensions
+        {
+            get
+            {
+                yield return new MyExtensionModule();
+            }
+        }
+
         public override IEnumerable<INinjectModule> Modules
         {
             get
@@ -58,8 +66,24 @@ Example:
         }
     }
 
+    public class MyExtensionModule : NinjectModule
+    {
+        public override void Load()
+        {
+            this.Bind<MyExtensionThing>().ToSelf();
+        }
+    }
+
     public class MyOtherFeature : Feature
     {
+        public override IEnumerable<INinjectModule> NeededExtensions
+        {
+            get
+            {
+                yield return new MyOtherExtensionModule();
+            }
+        }
+
         public override IEnumerable<INinjectModule> Modules
         {
             get
@@ -67,6 +91,14 @@ Example:
                 yield return new MyOtherFeatureModule();
                 yield return new MyInfrastructureModule();
             }
+        }
+    }
+
+    public class MyOtherExtensionModule : NinjectModule
+    {
+        public override void Load()
+        {
+            this.Bind<MyOtherExtensionThing>().ToSelf();
         }
     }
 
@@ -115,6 +147,14 @@ Example:
     }
 
     public class MyInfrastructureThing
+    {
+    }
+
+    public class MyExtensionThing
+    {
+    }
+
+    public class MyOtherExtensionThing
     {
     }
 ```
