@@ -47,12 +47,12 @@ namespace Ninject.Features.Facts
         }
 
         [Test]
-        public void CollectsAllBindingsAndBindsThemDistinctOnKernel()
+        public void CollectsAllBindingsAndLoadsThemDistinctOnKernel()
         {
-            IEnumerable<INinjectModule> loadedModules = null;
+            var loadedModules = new List<INinjectModule>();
 
             A.CallTo(() => this.kernel.Load(A<IEnumerable<INinjectModule>>._))
-                .Invokes((IEnumerable<INinjectModule> modules) => loadedModules = modules);
+                .Invokes((IEnumerable<INinjectModule> modules) => loadedModules.AddRange(modules));
 
             var dependencyA = new DependencyA();
             var dependencyB = new DependencyB();
@@ -69,8 +69,8 @@ namespace Ninject.Features.Facts
                     dependencyDefinitionB),
                 new FeatureC());
 
-            loadedModules.Select(m => m.GetType().Name)
-                .Should().BeEquivalentTo(
+            loadedModules.Select(_ => _.GetType().Name)
+                .Should().Contain(
                     new[] 
                     {
                         typeof(ModuleA),
@@ -78,7 +78,7 @@ namespace Ninject.Features.Facts
                         typeof(ModuleC),
                         typeof(ModuleD)
                     }.Select(_ => _.Name))
-                .And.HaveCount(4);
+                    .And.BeEquivalentTo(loadedModules.Select(_ => _.GetType().Name).Distinct());
         }
 
         [Test]
@@ -102,6 +102,44 @@ namespace Ninject.Features.Facts
             A.CallTo(() => this.kernel.Bind<IDependencyB>()).MustHaveHappened();
         }
 
+        [Test]
+        public void CollectsAllExtensionsAndLoadsThemDistinctBeforeLoadingModules()
+        {
+            var loadedModules = new List<INinjectModule>();
+
+            A.CallTo(() => this.kernel.Load(A<IEnumerable<INinjectModule>>._))
+                .Invokes((IEnumerable<INinjectModule> modules) => loadedModules.AddRange(modules));
+
+            var dependencyA = new DependencyA();
+            var dependencyB = new DependencyB();
+
+            var dependencyDefinitionA = new Dependency<IDependencyA>(bind => bind.ToConstant(dependencyA).InTransientScope());
+            var dependencyDefinitionB = new Dependency<IDependencyB>(bind => bind.ToConstant(dependencyB).InSingletonScope());
+
+            this.testee.Load(
+                new FeatureA(
+                    dependencyDefinitionA,
+                    dependencyDefinitionB),
+                new FeatureB(
+                    dependencyDefinitionA,
+                    dependencyDefinitionB));
+
+            loadedModules.Select(m => m.GetType().Name)
+                .Should().ContainInOrder(
+                    new[] 
+                    {
+                        typeof(ExtensionModuleA),
+                        typeof(ExtensionModuleB),
+                        typeof(ExtensionModuleC),
+
+                        typeof(ModuleA),
+                        typeof(ModuleB),
+                        typeof(ModuleC),
+                    }.Select(_ => _.Name))
+                .And.HaveCount(6);
+        }
+
+
         public class FeatureA : Feature
         {
             private Dependency<IDependencyB> b;
@@ -117,6 +155,15 @@ namespace Ninject.Features.Facts
                 get
                 {
                     yield return new SubFeatureA(this.b);
+                }
+            }
+
+            public override IEnumerable<INinjectModule> NeededExtensions
+            {
+                get
+                {
+                    yield return new ExtensionModuleA();
+                    yield return new ExtensionModuleB();
                 }
             }
 
@@ -146,6 +193,15 @@ namespace Ninject.Features.Facts
                 {
                     yield return new SubFeatureA(this.b);
                     yield return new SubFeatureB();
+                }
+            }
+
+            public override IEnumerable<INinjectModule> NeededExtensions
+            {
+                get
+                {
+                    yield return new ExtensionModuleB();
+                    yield return new ExtensionModuleC();
                 }
             }
         }
@@ -212,6 +268,27 @@ namespace Ninject.Features.Facts
         }
 
         public class ModuleD : NinjectModule
+        {
+            public override void Load()
+            {
+            }
+        }
+
+        public class ExtensionModuleA : NinjectModule
+        {
+            public override void Load()
+            {
+            }
+        }
+
+        public class ExtensionModuleB : NinjectModule
+        {
+            public override void Load()
+            {
+            }
+        }
+
+        public class ExtensionModuleC : NinjectModule
         {
             public override void Load()
             {

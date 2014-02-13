@@ -38,8 +38,14 @@ namespace Ninject.Features
             var processor = new Processor(features);
             Result result = processor.GetDistinctModulesAndDependenciesFromFeatures();
 
+            this.LoadExtensionsOntoKernel(result.Extensions);
             this.LoadModulesOntoKernel(result.Modules);
             this.BindDependencies(result.Dependencies);
+        }
+
+        private void LoadExtensionsOntoKernel(IEnumerable<INinjectModule> extensions)
+        {
+            this.kernel.Load(extensions);
         }
 
         private void LoadModulesOntoKernel(IEnumerable<NinjectModule> ninjectModules)
@@ -61,6 +67,7 @@ namespace Ninject.Features
             private readonly List<NinjectModule> modules = new List<NinjectModule>();
             private readonly List<Type> dependencyTypes = new List<Type>();
             private readonly List<Dependency> dependencies = new List<Dependency>();
+            private readonly List<INinjectModule> extensions = new List<INinjectModule>();
 
             private readonly Queue<Feature> featureQueue;
 
@@ -75,13 +82,25 @@ namespace Ninject.Features
                 {
                     Feature feature = this.featureQueue.Dequeue();
 
+                    this.AddExtensionsFrom(feature);
                     this.AddModulesFrom(feature);
                     this.AddDependenciesFrom(feature);
 
                     this.EnqueueSubFeaturesFrom(feature);
                 }
 
-                return new Result(this.modules, this.dependencies);
+                return new Result(this.modules, this.dependencies, this.extensions);
+            }
+
+            private void AddExtensionsFrom(Feature feature)
+            {
+                foreach (INinjectModule extension in feature.NeededExtensions)
+                {
+                    if (this.NotAlreadyKnownExtension(extension))
+                    {
+                        this.extensions.Add(extension);
+                    }
+                }
             }
 
             private void AddModulesFrom(Feature feature)
@@ -117,12 +136,18 @@ namespace Ninject.Features
                     this.featureQueue.Enqueue(neededFeature);
                 }
             }
+
+            private bool NotAlreadyKnownExtension(INinjectModule extension)
+            {
+                return this.extensions.All(knownExtension => knownExtension.GetType() != extension.GetType());
+            }
         }
 
         private class Result
         {
-            public Result(IEnumerable<NinjectModule> modules, IEnumerable<Dependency> dependencies)
+            public Result(IEnumerable<NinjectModule> modules, IEnumerable<Dependency> dependencies, IEnumerable<INinjectModule> extensions)
             {
+                this.Extensions = extensions;
                 this.Modules = modules;
                 this.Dependencies = dependencies;
             }
@@ -130,6 +155,8 @@ namespace Ninject.Features
             public IEnumerable<NinjectModule> Modules { get; private set; }
 
             public IEnumerable<Dependency> Dependencies { get; private set; }
+
+            public IEnumerable<INinjectModule> Extensions { get; private set; }
         }
     }
 }

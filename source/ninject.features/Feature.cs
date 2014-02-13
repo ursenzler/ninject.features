@@ -41,11 +41,19 @@ namespace Ninject.Features
             }
         }
 
+        public virtual IEnumerable<INinjectModule> NeededExtensions
+        {
+            get
+            {
+                return Enumerable.Empty<INinjectModule>();
+            }
+        }
+
         public virtual IEnumerable<INinjectModule> Modules
         {
             get
             {
-                return Enumerable.Empty<NinjectModule>();
+                return Enumerable.Empty<INinjectModule>();
             }
         }
 
