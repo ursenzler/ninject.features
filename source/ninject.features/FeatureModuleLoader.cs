@@ -1,6 +1,6 @@
 ﻿//-------------------------------------------------------------------------------
-// <copyright file="FeatureModuleLoader.cs" company="Appccelerate">
-//   Copyright (c) 2008-2013
+// <copyright file="FeatureModuleLoader.cs" company="Ninject.Features">
+//   Copyright (c) 2013-2014
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
