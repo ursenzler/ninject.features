@@ -35,10 +35,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Appccelerate.Fundamentals">
-      <HintPath>..\packages\Appccelerate.Fundamentals.2.0.98-alpha\lib\portable-windows8+net45\Appccelerate.Fundamentals.dll</HintPath>
+      <HintPath>..\packages\Appccelerate.Fundamentals.2.1.0\lib\portable-windows8+net45\Appccelerate.Fundamentals.dll</HintPath>
     </Reference>
     <Reference Include="Appccelerate.IO">
-      <HintPath>..\packages\Appccelerate.IO.2.0.98-alpha\lib\Net45\Appccelerate.IO.dll</HintPath>
+      <HintPath>..\packages\Appccelerate.IO.2.1.0\lib\Net45\Appccelerate.IO.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

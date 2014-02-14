@@ -1,6 +1,6 @@
 ﻿//-------------------------------------------------------------------------------
-// <copyright file="Program.cs" company="Appccelerate">
-//   Copyright (c) 2008-2013
+// <copyright file="Program.cs" company="Ninject.Features">
+//   Copyright (c) 2013-2014
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -58,6 +58,14 @@ namespace Ninject.Features.Sample
 
     public class MyFeature : Feature
     {
+        public override IEnumerable<INinjectModule> NeededExtensions
+        {
+            get
+            {
+                yield return new MyExtensionModule();
+            }
+        }
+
         public override IEnumerable<INinjectModule> Modules
         {
             get
@@ -68,8 +76,24 @@ namespace Ninject.Features.Sample
         }
     }
 
+    public class MyExtensionModule : NinjectModule
+    {
+        public override void Load()
+        {
+            this.Bind<MyExtensionThing>().ToSelf();
+        }
+    }
+
     public class MyOtherFeature : Feature
     {
+        public override IEnumerable<INinjectModule> NeededExtensions
+        {
+            get
+            {
+                yield return new MyOtherExtensionModule();
+            }
+        }
+
         public override IEnumerable<INinjectModule> Modules
         {
             get
@@ -77,6 +101,14 @@ namespace Ninject.Features.Sample
                 yield return new MyOtherFeatureModule();
                 yield return new MyInfrastructureModule();
             }
+        }
+    }
+
+    public class MyOtherExtensionModule : NinjectModule
+    {
+        public override void Load()
+        {
+            this.Bind<MyOtherExtensionThing>().ToSelf();
         }
     }
 
@@ -125,6 +157,14 @@ namespace Ninject.Features.Sample
     }
 
     public class MyInfrastructureThing
+    {
+    }
+
+    public class MyExtensionThing
+    {
+    }
+
+    public class MyOtherExtensionThing
     {
     }
 }

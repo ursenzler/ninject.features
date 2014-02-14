@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Adds feature support to Ninject.</description>
     <releaseNotes>Initial release</releaseNotes>
-    <copyright>Copyright 2013</copyright>
+    <copyright>Copyright 2013-2014</copyright>
     <tags>Ninject</tags>
     <dependencies>
       <dependency id="Ninject" version="[3,4)" />

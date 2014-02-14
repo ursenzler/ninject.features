@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninject.Features", "ninject.features\Ninject.Features.csproj", "{BB57FC25-3DD8-4C45-A33D-EB03AC1F19BB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninject.FeatureDumper", "Ninject.FeatureDumper\Ninject.FeatureDumper.csproj", "{48C74BF1-47C7-43C1-AEA8-CD1206AD8E65}"

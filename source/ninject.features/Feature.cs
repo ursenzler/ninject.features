@@ -1,6 +1,6 @@
 ﻿//-------------------------------------------------------------------------------
 // <copyright file="Feature.cs" company="Ninject.Features">
-//   Copyright (c) 2008-2013
+//   Copyright (c) 2013-2014
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -41,11 +41,19 @@ namespace Ninject.Features
             }
         }
 
+        public virtual IEnumerable<INinjectModule> NeededExtensions
+        {
+            get
+            {
+                return Enumerable.Empty<INinjectModule>();
+            }
+        }
+
         public virtual IEnumerable<INinjectModule> Modules
         {
             get
             {
-                return Enumerable.Empty<NinjectModule>();
+                return Enumerable.Empty<INinjectModule>();
             }
         }
 
@@ -60,7 +68,7 @@ namespace Ninject.Features
         protected IEnumerable<INinjectModule> GetAssemblyNinjectModules(Assembly assembly)
         {
             return assembly.GetExportedTypes().Where(t =>
-                typeof(NinjectModule).IsAssignableFrom(t) &&
+                typeof(INinjectModule).IsAssignableFrom(t) &&
                 !t.IsAbstract &&
                 !t.IsInterface &&
                 t.GetConstructor(Type.EmptyTypes) != null)
