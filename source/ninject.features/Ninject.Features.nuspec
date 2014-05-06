@@ -14,7 +14,7 @@
     <copyright>Copyright 2013-2014</copyright>
     <tags>Ninject</tags>
     <dependencies>
-      <dependency id="Ninject" version="[3,4)" />
+      <dependency id="Ninject" version="[3.2.2,4)" />
     </dependencies>
   </metadata>
 </package>
