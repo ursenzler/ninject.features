@@ -83,7 +83,6 @@ copy $(TargetDir)Ninject.dll $(TargetDir)package\tools
 copy $(TargetDir)Ninject.FeatureDumper.exe .config $(TargetDir)package\tools
 copy $(TargetDir)Ninject.Features.dll $(TargetDir)package\tools</PostBuildEvent>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

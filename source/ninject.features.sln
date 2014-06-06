@@ -1,16 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninject.Features", "ninject.features\Ninject.Features.csproj", "{BB57FC25-3DD8-4C45-A33D-EB03AC1F19BB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninject.FeatureDumper", "Ninject.FeatureDumper\Ninject.FeatureDumper.csproj", "{48C74BF1-47C7-43C1-AEA8-CD1206AD8E65}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninject.Features.Facts", "Ninject.Features.Facts\Ninject.Features.Facts.csproj", "{1053CEAA-9C75-48A8-B351-0E55022E759C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{36D98C74-5CFE-4078-BA10-7D1BB3B45F2B}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninject.Features.Sample", "Ninject.Features.Sample\Ninject.Features.Sample.csproj", "{43B08D5C-E583-44E7-BC9C-7232293ADF93}"
 EndProject
