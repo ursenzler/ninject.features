@@ -21,6 +21,7 @@ namespace Ninject.FeatureDumper
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
     using System.Reflection;
 
     using Ninject.Features;
@@ -28,6 +29,7 @@ namespace Ninject.FeatureDumper
     public class FeatureProcessor
     {
         private readonly HashSet<Tuple<Type, Type>> chain = new HashSet<Tuple<Type, Type>>();
+
         private readonly HashSet<Type> allFeatures = new HashSet<Type>();
 
         public Features ProcessAssemblies(IEnumerable<Assembly> assemblies)
