@@ -44,6 +44,8 @@ namespace Ninject.FeatureDumper
 
         private void ProcessAssembly(Assembly assembly)
         {
+            Console.WriteLine("looking for features in " + assembly.GetName().Name);
+
             var features = assembly.GetExportedTypes().Where(type => type.IsSubclassOf(typeof(Feature)));
 
             foreach (Type feature in features)
@@ -54,7 +56,7 @@ namespace Ninject.FeatureDumper
 
         private void ProcessFeature(Type feature)
         {
-            Console.WriteLine("found feature " + feature.Name);
+            Console.WriteLine("found feature " + feature.Name + " (" + feature.FullName + ")");
 
             var constructor = feature.GetConstructors().OrderBy(c => c.GetParameters().Length).First();
 
@@ -68,7 +70,7 @@ namespace Ninject.FeatureDumper
             foreach (Feature neededFeature in neededFeatures)
             {
                 Console.WriteLine("needed features:");
-                Console.WriteLine("- " + neededFeature.GetType().Name);
+                Console.WriteLine("- " + neededFeature.GetType().Name + "(" + neededFeature.GetType().FullName + ")");
 
                 this.chain.Add(new Tuple<Type, Type>(feature, neededFeature.GetType()));
 

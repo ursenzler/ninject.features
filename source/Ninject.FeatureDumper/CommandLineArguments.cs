@@ -22,6 +22,19 @@ namespace Ninject.FeatureDumper
 
     public class CommandLineArguments
     {
+        private CommandLineArguments(AbsoluteFilePath outputPath, AbsoluteFolderPath assemblyFolder, bool successful)
+        {
+            this.OutputPath = outputPath;
+            this.AssemblyFolder = assemblyFolder;
+            this.Successful = successful;
+        }
+
+        public AbsoluteFilePath OutputPath { get; private set; }
+
+        public AbsoluteFolderPath AssemblyFolder { get; private set; }
+
+        public bool Successful { get; private set; }
+
         public static CommandLineArguments CreateSuccessful(
             AbsoluteFilePath outputPath,
             AbsoluteFolderPath assemblyFolder)
@@ -33,18 +46,5 @@ namespace Ninject.FeatureDumper
         {
             return new CommandLineArguments(null, null, false);
         }
-
-        private CommandLineArguments(AbsoluteFilePath outputPath, AbsoluteFolderPath assemblyFolder, bool successful)
-        {
-            this.OutputPath = outputPath;
-            this.AssemblyFolder = assemblyFolder;
-            this.Successful = successful;
-        }
-
-        public AbsoluteFilePath OutputPath { get; private set; }
-            
-        public AbsoluteFolderPath AssemblyFolder { get; private set; }
-
-        public bool Successful { get; private set; }
     }
 }

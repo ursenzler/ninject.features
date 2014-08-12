@@ -64,20 +64,18 @@ namespace Ninject.FeatureDumper
             }
 
             this.loadedAssemblies.Add(current);
+            Console.WriteLine("loaded referenced assembly " + current.FullName);
 
             foreach (var assemblyName in current.GetReferencedAssemblies())
             {
                 try
                 {
                     var assembly = Assembly.Load(assemblyName);
-
-                    Console.WriteLine("loaded assembly " + current.FullName);
-
                     this.AddReferencedAssemblies(assembly);
                 }
                 catch
                 {
-                    Console.WriteLine("skipping assembly because it is not found: " + assemblyName.Name);
+                    Console.WriteLine("skipping referenced assembly `{0}` of assembly `{1}` because it is not found.", assemblyName.Name, current.FullName);
                 }
             }
         }
