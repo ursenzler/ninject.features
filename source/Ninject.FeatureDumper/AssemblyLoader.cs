@@ -58,11 +58,6 @@ namespace Ninject.FeatureDumper
 
         private void AddReferencedAssemblies(Assembly current)
         {
-            if (current.FullName.Contains("Dcml"))
-            {
-                string s = "4";
-
-            }
             if (this.loadedAssemblies.Contains(current, new AssemblyComparer()))
             {
                 return;
