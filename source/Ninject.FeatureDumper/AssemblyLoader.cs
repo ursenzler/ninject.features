@@ -58,7 +58,12 @@ namespace Ninject.FeatureDumper
 
         private void AddReferencedAssemblies(Assembly current)
         {
-            if (this.loadedAssemblies.Contains(current))
+            if (current.FullName.Contains("Dcml"))
+            {
+                string s = "4";
+
+            }
+            if (this.loadedAssemblies.Contains(current, new AssemblyComparer()))
             {
                 return;
             }
@@ -77,6 +82,19 @@ namespace Ninject.FeatureDumper
                 {
                     Console.WriteLine("skipping referenced assembly `{0}` of assembly `{1}` because it is not found.", assemblyName.Name, current.FullName);
                 }
+            }
+        }
+
+        public class AssemblyComparer : IEqualityComparer<Assembly>
+        {
+            public bool Equals(Assembly x, Assembly y)
+            {
+                return x.FullName == y.FullName;
+            }
+
+            public int GetHashCode(Assembly obj)
+            {
+                return obj.GetHashCode();
             }
         }
     }
