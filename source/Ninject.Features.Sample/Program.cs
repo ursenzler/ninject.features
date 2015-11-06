@@ -22,6 +22,7 @@ namespace Ninject.Features.Sample
 
     using Ninject.Modules;
 
+    // example with more sense!
     public class Program
     {
         public static void Main(string[] args)
@@ -36,7 +37,7 @@ namespace Ninject.Features.Sample
         }
     }
 
-    public class MyAppFeature : Feature
+    public class MyAppFeature : Feature<IMyAppFeatureFactory>
     {
         public override IEnumerable<Feature> NeededFeatures
         {
@@ -56,7 +57,11 @@ namespace Ninject.Features.Sample
         }
     }
 
-    public class MyFeature : Feature
+    public interface IMyAppFeatureFactory
+    {
+    }
+
+    public class MyFeature : Feature<IMyFeatureFactory>
     {
         public override IEnumerable<INinjectModule> NeededExtensions
         {
@@ -76,6 +81,10 @@ namespace Ninject.Features.Sample
         }
     }
 
+    public interface IMyFeatureFactory
+    {
+    }
+
     public class MyExtensionModule : NinjectModule
     {
         public override void Load()
@@ -84,7 +93,7 @@ namespace Ninject.Features.Sample
         }
     }
 
-    public class MyOtherFeature : Feature
+    public class MyOtherFeature : Feature<IMyOtherFeatureFactory>
     {
         public override IEnumerable<INinjectModule> NeededExtensions
         {
@@ -102,6 +111,10 @@ namespace Ninject.Features.Sample
                 yield return new MyInfrastructureModule();
             }
         }
+    }
+
+    public interface IMyOtherFeatureFactory
+    {
     }
 
     public class MyOtherExtensionModule : NinjectModule

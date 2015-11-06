@@ -26,44 +26,20 @@ namespace Ninject.Features
 
     public abstract class Feature
     {
-        private readonly IEnumerable<Dependency> dependencies;
-
         protected Feature(params Dependency[] dependencies)
         {
-            this.dependencies = dependencies;
+            this.Dependencies = dependencies;
         }
 
-        public virtual IEnumerable<Feature> NeededFeatures
-        {
-            get
-            {
-                return Enumerable.Empty<Feature>();
-            }
-        }
+        public abstract Type FactoryType { get; }
 
-        public virtual IEnumerable<INinjectModule> NeededExtensions
-        {
-            get
-            {
-                return Enumerable.Empty<INinjectModule>();
-            }
-        }
+        public virtual IEnumerable<Feature> NeededFeatures => Enumerable.Empty<Feature>();
 
-        public virtual IEnumerable<INinjectModule> Modules
-        {
-            get
-            {
-                return Enumerable.Empty<INinjectModule>();
-            }
-        }
+        public virtual IEnumerable<INinjectModule> NeededExtensions { get; } = Enumerable.Empty<INinjectModule>();
 
-        public IEnumerable<Dependency> Dependencies
-        {
-            get
-            {
-                return this.dependencies;
-            }
-        }
+        public virtual IEnumerable<INinjectModule> Modules { get; } = Enumerable.Empty<INinjectModule>();
+
+        public IEnumerable<Dependency> Dependencies { get; }
 
         protected IEnumerable<INinjectModule> GetAssemblyNinjectModules(Assembly assembly)
         {
@@ -74,5 +50,15 @@ namespace Ninject.Features
                 t.GetConstructor(Type.EmptyTypes) != null)
                 .Select(type => (INinjectModule)Activator.CreateInstance(type));
         }
+    }
+
+    public abstract class Feature<TFeatureFactory> : Feature
+    {
+        protected Feature(params Dependency[] dependencies)
+            : base(dependencies)
+        {
+        }
+
+        public override Type FactoryType => typeof(TFeatureFactory);
     }
 }

@@ -18,6 +18,7 @@
 
 namespace Ninject.Features
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -40,6 +41,21 @@ namespace Ninject.Features
             this.LoadExtensionsOntoKernel(result.Extensions);
             this.LoadModulesOntoKernel(result.Modules);
             this.BindDependencies(result.Dependencies);
+
+            this.CheckFactoryBindings(result.Factories);
+        }
+
+        private void CheckFactoryBindings(IEnumerable<Type> factories)
+        {
+            foreach (var factory in factories)
+            {
+                var bindings = this.kernel.GetBindings(factory);
+
+                if (!bindings.Any())
+                {
+                    throw new InvalidOperationException($"Missing binding for feature factory `{factory}`.");
+                }
+            }
         }
 
         private void LoadExtensionsOntoKernel(IEnumerable<INinjectModule> extensions)
@@ -52,19 +68,20 @@ namespace Ninject.Features
             this.kernel.Load(ninjectModules);
         }
 
-        private void BindDependencies(IEnumerable<Dependency> dependencies)
+        private void BindDependencies(IEnumerable<Tuple<Dependency, Type>> dependencies)
         {
-            foreach (Dependency dependency in dependencies)
+            foreach (Tuple<Dependency, Type> dependency in dependencies)
             {
-                dependency.Bind(this.kernel);
+                dependency.Item1.Bind(this.kernel, dependency.Item2);
             }
         }
 
         private class Processor
         {
             private readonly List<INinjectModule> modules = new List<INinjectModule>();
-            private readonly List<Dependency> dependencies = new List<Dependency>();
+            private readonly List<Tuple<Dependency, Type>> dependencies = new List<Tuple<Dependency, Type>>();
             private readonly List<INinjectModule> extensions = new List<INinjectModule>();
+            private readonly List<Type> factories = new List<Type>();
 
             private readonly Queue<Feature> featureQueue;
 
@@ -83,10 +100,12 @@ namespace Ninject.Features
                     this.AddModulesFrom(feature);
                     this.AddDependenciesFrom(feature);
 
+                    this.factories.Add(feature.FactoryType);
+
                     this.EnqueueSubFeaturesFrom(feature);
                 }
 
-                return new Result(this.modules, this.dependencies, this.extensions);
+                return new Result(this.modules, this.dependencies, this.extensions, this.factories);
             }
 
             private void AddExtensionsFrom(Feature feature)
@@ -117,7 +136,7 @@ namespace Ninject.Features
                 {
                     if (this.NotAlreadyKnownDepedency(dependency))
                     {
-                        this.dependencies.Add(dependency);
+                        this.dependencies.Add(new Tuple<Dependency, Type>(dependency, feature.FactoryType));
                     }
                 }
             }
@@ -148,18 +167,25 @@ namespace Ninject.Features
 
         private class Result
         {
-            public Result(IEnumerable<INinjectModule> modules, IEnumerable<Dependency> dependencies, IEnumerable<INinjectModule> extensions)
+            public Result(
+                IEnumerable<INinjectModule> modules, 
+                IEnumerable<Tuple<Dependency, Type>> dependencies, 
+                IEnumerable<INinjectModule> extensions,
+                IEnumerable<Type> factories)
             {
                 this.Extensions = extensions;
+                this.Factories = factories;
                 this.Modules = modules;
                 this.Dependencies = dependencies;
             }
 
             public IEnumerable<INinjectModule> Modules { get; private set; }
 
-            public IEnumerable<Dependency> Dependencies { get; private set; }
+            public IEnumerable<Tuple<Dependency, Type>> Dependencies { get; private set; }
 
             public IEnumerable<INinjectModule> Extensions { get; private set; }
+
+            public IEnumerable<Type> Factories { get; private set; }
         }
     }
 }

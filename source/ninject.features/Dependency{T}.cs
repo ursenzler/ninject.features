@@ -20,20 +20,57 @@ namespace Ninject.Features
 {
     using System;
 
+    using Ninject.Activation;
     using Ninject.Syntax;
 
     public class Dependency<T> : Dependency
     {
-        private readonly Action<IBindingToSyntax<T>> bind;
+        private readonly Action<IBindingToSyntax<T>> implementation;
 
-        public Dependency(Action<IBindingToSyntax<T>> bind)
+        public Dependency(Action<IBindingToSyntax<T>> implementation)
         {
-            this.bind = bind;
+            this.implementation = implementation;
         }
 
-        public sealed override void Bind(IKernel kernel)
+        public override void Bind(IKernel kernel, Type factory)
         {
-            this.bind(kernel.Bind<T>());
+            var b = kernel.Bind<T>();
+
+            this.implementation(b);
+
+            var userCondition = b.BindingConfiguration.Condition ?? (r => true);
+
+            b.BindingConfiguration.Condition = request => userCondition(request) && IsAnyAncestorTheFactory(request, factory);
+        }
+
+        private static bool IsAnyAncestorTheFactory(IRequest request, Type factory)
+        {
+            var parentContext = request.ParentContext;
+            if (parentContext == null)
+            {
+                return false;
+            }
+
+            return
+                parentContext.Request.Service == factory ||
+                IsAnyAncestorTheFactory(parentContext.Request, factory);
+        }
+    }
+
+    public class KernelGetDependency<T> : Dependency<T>
+    {
+        public KernelGetDependency()
+            : base(bind => bind.ToMethod(c => c.Kernel.Get<T>()))
+        {
+        }
+    }
+
+    public class TransientTypeDependency<T, TImplementation> : Dependency<T>
+        where TImplementation : T
+    {
+        public TransientTypeDependency()
+            : base(bind => bind.To<TImplementation>().InTransientScope())
+        {
         }
     }
 }

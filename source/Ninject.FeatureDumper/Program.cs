@@ -21,6 +21,7 @@ namespace Ninject.FeatureDumper
     using System;
     using System.Diagnostics;
 
+    using Appccelerate.CommandLineParser;
     using Appccelerate.IO;
 
     public class Program
@@ -29,20 +30,44 @@ namespace Ninject.FeatureDumper
         {
             try
             {
-                var commandLineArguments = ParseCommandLineArguments(args);
+                AbsoluteFilePath outputPath = null;
+                AbsoluteFolderPath assemblyFolder = null;
+                AbsoluteFilePath yedPath = @"C:\Program Files (x86)\yWorks\yEd\yEd.exe";
+
+                CommandLineConfiguration commandLineConfiguration = CommandLineParserConfigurator
+                    .Create()
+                        .WithPositional(path => outputPath = path)
+                            .Required()
+                            .DescribedBy("output.tgf", "The absolute output file path. Must have extension .tgf")
+                        .WithPositional(folder => assemblyFolder = folder)
+                            .Required()
+                            .DescribedBy("binary folder", "The folder containing the binaries to analyze. Must contain all direct and indirect dependencies, too.")
+                        .WithNamed("-yed", path => yedPath = path)
+                            .DescribedBy("yEd path", @"Path specifing location of yEd. If not specified, the default installation path is used (C:\Program Files (x86)\yWorks\yEd\yEd.exe).")
+                    .BuildConfiguration();
+
+                var parser = new CommandLineParser(commandLineConfiguration);
+                ParseResult parseResult = parser.Parse(args);
+
+                if (!parseResult.Succeeded)
+                {
+                    WriteUsageToConsole(commandLineConfiguration, parseResult);
+
+                    return;
+                }
 
                 var assemblyLoader = new AssemblyLoader();
-                var assemblies = assemblyLoader.LoadAssemblies(commandLineArguments.AssemblyFolder);
+                var assemblies = assemblyLoader.LoadAssemblies(assemblyFolder);
 
                 var featureProcessor = new FeatureProcessor();
                 Features features = featureProcessor.ProcessAssemblies(assemblies);
 
                 var tgfWriter = new TgfWriter();
-                tgfWriter.WriteTgfFile(commandLineArguments.OutputPath, features);
+                tgfWriter.WriteTgfFile(outputPath, features);
 
-                StartYEd(commandLineArguments.OutputPath);
+                StartYEd(yedPath, outputPath);
 
-                Console.WriteLine("done output file is " + commandLineArguments.OutputPath);
+                Console.WriteLine("done output file is " + outputPath);
             }
             catch (Exception exception)
             {
@@ -51,26 +76,24 @@ namespace Ninject.FeatureDumper
             }
         }
 
-        private static CommandLineArguments ParseCommandLineArguments(string[] args)
+        private static void WriteUsageToConsole(CommandLineConfiguration commandLineConfiguration, ParseResult parseResult)
         {
-            if (args.Length != 2)
-            {
-                Console.WriteLine("usage: FeatureDumper <outputFile .tgf> <folder with assemblies>");
-                return CommandLineArguments.CreateFailed();
-            }
+            Usage usage = new UsageComposer(commandLineConfiguration).Compose();
 
-            return CommandLineArguments.CreateSuccessful(
-                args[0],
-                args[1]);
+            Console.WriteLine(parseResult.Message);
+            Console.WriteLine("usage:" + usage.Arguments);
+            Console.WriteLine("options");
+            Console.WriteLine(usage.Options.IndentBy(4));
+            Console.WriteLine();
         }
 
-        private static void StartYEd(AbsoluteFilePath outputPath)
+        private static void StartYEd(AbsoluteFilePath yedPath, AbsoluteFilePath outputPath)
         {
             var yEd = new Process
                       {
                           StartInfo =
                           {
-                              FileName = @"C:\Program Files (x86)\yWorks\yEd\yEd.exe",
+                              FileName = yedPath,
                               Arguments = outputPath
                           }
                       };
