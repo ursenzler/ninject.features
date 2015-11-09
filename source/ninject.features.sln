@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninject.Features.Sample", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninject.Features.Specs", "Ninject.Features.Specs\Ninject.Features.Specs.csproj", "{99CED5D9-84E3-45F9-990E-198D8B3E2467}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninject.Features.Sample.Specs", "Ninject.Features.Sample.Specs\Ninject.Features.Sample.Specs.csproj", "{C5AACB0A-C5EE-405B-B041-6ECE868DFF8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{99CED5D9-84E3-45F9-990E-198D8B3E2467}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99CED5D9-84E3-45F9-990E-198D8B3E2467}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99CED5D9-84E3-45F9-990E-198D8B3E2467}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5AACB0A-C5EE-405B-B041-6ECE868DFF8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5AACB0A-C5EE-405B-B041-6ECE868DFF8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5AACB0A-C5EE-405B-B041-6ECE868DFF8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5AACB0A-C5EE-405B-B041-6ECE868DFF8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

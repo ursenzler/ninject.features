@@ -1,183 +1,31 @@
-﻿//-------------------------------------------------------------------------------
-// <copyright file="Program.cs" company="Ninject.Features">
-//   Copyright (c) 2013-2014
-//
-//   Licensed under the Apache License, Version 2.0 (the "License");
-//   you may not use this file except in compliance with the License.
-//   You may obtain a copy of the License at
-//
-//       http://www.apache.org/licenses/LICENSE-2.0
-//
-//   Unless required by applicable law or agreed to in writing, software
-//   distributed under the License is distributed on an "AS IS" BASIS,
-//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//   See the License for the specific language governing permissions and
-//   limitations under the License.
-// </copyright>
-//-------------------------------------------------------------------------------
-
-namespace Ninject.Features.Sample
+﻿namespace Ninject.Features.Sample
 {
-    using System.Collections.Generic;
+    using System;
 
-    using Ninject.Modules;
+    using Ninject.Features.Sample.TimeStamping;
 
-    // example with more sense!
     public class Program
     {
         public static void Main(string[] args)
         {
+            string content = "this is some content that will be processed by this crazy sample code";
+            int maxLineLength = 15;
+
+            Console.WriteLine($"input = {content}");
+
+            // build up
+            var timeProvider = new TransientTypeDependency<ITimeProvider, LocalLongTimeProvider>();
+
             var kernel = new StandardKernel();
-
             var featureModuleLoader = new FeatureModuleLoader(kernel);
+            featureModuleLoader.Load(new WorkflowFeature(timeProvider));
 
-            featureModuleLoader.Load(new MyAppFeature());
+            // run
+            var appFactory = kernel.Get<IWorkflowFactory>();
+            var workflow = appFactory.CreateWorkflow();
+            var processedContent = workflow.Process(content, maxLineLength);
 
-            var thing = kernel.Get<MyInfrastructureThing>();
+            Console.WriteLine($"output = {processedContent}");
         }
-    }
-
-    public class MyAppFeature : Feature<IMyAppFeatureFactory>
-    {
-        public override IEnumerable<Feature> NeededFeatures
-        {
-            get
-            {
-                yield return new MyFeature();
-                yield return new MyOtherFeature();
-            }
-        }
-
-        public override IEnumerable<INinjectModule> Modules
-        {
-            get
-            {
-                yield return new MyAppModule();
-            }
-        }
-    }
-
-    public interface IMyAppFeatureFactory
-    {
-    }
-
-    public class MyFeature : Feature<IMyFeatureFactory>
-    {
-        public override IEnumerable<INinjectModule> NeededExtensions
-        {
-            get
-            {
-                yield return new MyExtensionModule();
-            }
-        }
-
-        public override IEnumerable<INinjectModule> Modules
-        {
-            get
-            {
-                yield return new MyFeatureModule();
-                yield return new MyInfrastructureModule();
-            }
-        }
-    }
-
-    public interface IMyFeatureFactory
-    {
-    }
-
-    public class MyExtensionModule : NinjectModule
-    {
-        public override void Load()
-        {
-            this.Bind<MyExtensionThing>().ToSelf();
-        }
-    }
-
-    public class MyOtherFeature : Feature<IMyOtherFeatureFactory>
-    {
-        public override IEnumerable<INinjectModule> NeededExtensions
-        {
-            get
-            {
-                yield return new MyOtherExtensionModule();
-            }
-        }
-
-        public override IEnumerable<INinjectModule> Modules
-        {
-            get
-            {
-                yield return new MyOtherFeatureModule();
-                yield return new MyInfrastructureModule();
-            }
-        }
-    }
-
-    public interface IMyOtherFeatureFactory
-    {
-    }
-
-    public class MyOtherExtensionModule : NinjectModule
-    {
-        public override void Load()
-        {
-            this.Bind<MyOtherExtensionThing>().ToSelf();
-        }
-    }
-
-    public class MyAppModule : NinjectModule
-    {
-        public override void Load()
-        {
-            this.Bind<MyAppThing>().ToSelf();
-        }
-    }
-
-    public class MyFeatureModule : NinjectModule
-    {
-        public override void Load()
-        {
-            this.Bind<MyFeatureThing>().ToSelf();
-        }
-    }
-
-    public class MyOtherFeatureModule : NinjectModule
-    {
-        public override void Load()
-        {
-            this.Bind<MyOtherFeatureThing>().ToSelf();
-        }
-    }
-
-    public class MyInfrastructureModule : NinjectModule
-    {
-        public override void Load()
-        {
-            this.Bind<MyInfrastructureThing>().ToSelf();
-        }
-    }
-
-    public class MyAppThing
-    {
-    }
-
-    public class MyFeatureThing
-    {
-    }
-
-    public class MyOtherFeatureThing
-    {
-    }
-
-    public class MyInfrastructureThing
-    {
-    }
-
-    public class MyExtensionThing
-    {
-    }
-
-    public class MyOtherExtensionThing
-    {
     }
 }
