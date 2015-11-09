@@ -73,4 +73,13 @@ namespace Ninject.Features
         {
         }
     }
+
+    public class FeatureWideDependency<T, TImplementation> : Dependency<T>
+        where TImplementation : T
+    {
+        public FeatureWideDependency()
+            : base(bind => bind.To<TImplementation>().InSingletonScope())
+        {
+        }
+    }
 }

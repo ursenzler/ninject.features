@@ -55,19 +55,19 @@ namespace Ninject.Features.Specs
                         new TransientTypeDependency<ITransientDependency, TransientDependency>(),
                         new Dependency<IDependencyB>(bind => bind.To<DependencyB>().InSingletonScope()),
                         new KernelGetDependency<ISharedSingletonDependency>(),
-                        new Dependency<IFeatureWideDependency>(bind => bind.To<FeatureWideDependency>().InSingletonScope())),
+                        new FeatureWideDependency<IFeatureWideDependency, FeatureWideDependency>()),
                     new FeatureB(
                         new TransientTypeDependency<ITransientDependency, TransientDependency>(),
                         new Dependency<IDependencyB>(bind => bind.To<DependencyB>().InSingletonScope()),
                         new KernelGetDependency<ISharedSingletonDependency>(),
-                        new Dependency<IFeatureWideDependency>(bind => bind.To<FeatureWideDependency>().InSingletonScope())),
+                        new FeatureWideDependency<IFeatureWideDependency, FeatureWideDependency>()),
                     new FeatureC()));
 
             "it should load all modules"._(() =>
                 kernel.GetModules().Select(x => x.Name.Split('+').Last())
                     .Should().Contain(
                         nameof(ModuleA),
-                        nameof(ModuleB),
+                        nameof(SharedModule),
                         nameof(ModuleC),
                         nameof(ModuleD)));
 
@@ -85,7 +85,7 @@ namespace Ninject.Features.Specs
                             nameof(ExtensionModuleB),
                             nameof(FeatureAModule),
                             nameof(ModuleA),
-                            nameof(ModuleB))
+                            nameof(SharedModule))
                         .And.ContainInOrder( // modules from feature B
                             nameof(ExtensionModuleB),
                             nameof(ExtensionModuleC),
@@ -186,7 +186,7 @@ namespace Ninject.Features.Specs
                 {
                     yield return new FeatureAModule();
                     yield return new ModuleA();
-                    yield return new ModuleB();
+                    yield return new SharedModule();
                 }
             }
         }
@@ -287,7 +287,7 @@ namespace Ninject.Features.Specs
                 get
                 {
                     yield return new SubFeatureAModule();
-                    yield return new ModuleB();
+                    yield return new SharedModule();
                     yield return new ModuleC();
                 }
             }
@@ -308,7 +308,7 @@ namespace Ninject.Features.Specs
                 get
                 {
                     yield return new SubFeatureBModule();
-                    yield return new ModuleB();
+                    yield return new SharedModule();
                 }
             }
         }
@@ -329,7 +329,7 @@ namespace Ninject.Features.Specs
             }
         }
 
-        public class ModuleB : NinjectModule
+        public class SharedModule : NinjectModule
         {
             public override void Load()
             {
