@@ -8,13 +8,13 @@
     {
         private readonly IUmlautReplacingFeatureFactory umlautReplacingFeatureFactory;
 
-        private readonly ILineWrappingFeatureFactory lineWrappingFeatureFactory;
+        private readonly LineWrappingFeature.ILineWrappingFeatureFactory lineWrappingFeatureFactory;
 
         private readonly ITimeStampingFeatureFactory timeStampingFeatureFactory;
 
         public Workflow(
             IUmlautReplacingFeatureFactory umlautReplacingFeatureFactory,
-            ILineWrappingFeatureFactory lineWrappingFeatureFactory,
+            LineWrappingFeature.ILineWrappingFeatureFactory lineWrappingFeatureFactory,
             ITimeStampingFeatureFactory timeStampingFeatureFactory)
         {
             this.umlautReplacingFeatureFactory = umlautReplacingFeatureFactory;
@@ -33,7 +33,7 @@
 
         private string ReplaceUmlauts(string content)
         {
-            var documentLoader = this.umlautReplacingFeatureFactory.CreateDocumentLoader();
+            var documentLoader = this.umlautReplacingFeatureFactory.CreateDocumentLoader(UmlautReplacingOptions.All);
             return documentLoader.ReplaceUmlauts(content);
         }
 

@@ -17,7 +17,7 @@
             var timeProvider = new TransientTypeDependency<ITimeProvider, LocalLongTimeProvider>();
 
             var kernel = new StandardKernel();
-            var featureModuleLoader = new FeatureModuleLoader(kernel);
+            var featureModuleLoader = new FeatureLoader(kernel);
             featureModuleLoader.Load(new WorkflowFeature(timeProvider));
 
             // run

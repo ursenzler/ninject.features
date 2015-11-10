@@ -1,5 +1,5 @@
 ﻿//-------------------------------------------------------------------------------
-// <copyright file="FeatureModuleLoader.cs" company="Ninject.Features">
+// <copyright file="FeatureLoader.cs" company="Ninject.Features">
 //   Copyright (c) 2013-2014
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,11 +24,11 @@ namespace Ninject.Features
 
     using Ninject.Modules;
 
-    public class FeatureModuleLoader
+    public class FeatureLoader
     {
         private readonly IKernel kernel;
 
-        public FeatureModuleLoader(IKernel kernel)
+        public FeatureLoader(IKernel kernel)
         {
             this.kernel = kernel;
         }
@@ -39,28 +39,24 @@ namespace Ninject.Features
             Result result = processor.GetDistinctModulesAndDependenciesFromFeatures();
 
             this.LoadExtensionsOntoKernel(result.Extensions);
+            this.BindFactories(result.Features);
             this.LoadModulesOntoKernel(result.Modules);
             this.BindDependencies(result.Dependencies);
 
             this.CheckFactoryBindings(result.Factories);
         }
 
-        private void CheckFactoryBindings(IEnumerable<Type> factories)
-        {
-            foreach (var factory in factories)
-            {
-                var bindings = this.kernel.GetBindings(factory);
-
-                if (!bindings.Any())
-                {
-                    throw new InvalidOperationException($"Missing binding for feature factory `{factory}`.");
-                }
-            }
-        }
-
         private void LoadExtensionsOntoKernel(IEnumerable<INinjectModule> extensions)
         {
             this.kernel.Load(extensions);
+        }
+
+        private void BindFactories(IEnumerable<Feature> features)
+        {
+            foreach (var feature in features)
+            {
+                feature.BindFeatureFactory(this.kernel);
+            }
         }
 
         private void LoadModulesOntoKernel(IEnumerable<INinjectModule> ninjectModules)
@@ -76,12 +72,26 @@ namespace Ninject.Features
             }
         }
 
+        private void CheckFactoryBindings(IEnumerable<Type> factories)
+        {
+            foreach (var factory in factories)
+            {
+                var bindings = this.kernel.GetBindings(factory);
+
+                if (!bindings.Any())
+                {
+                    throw new InvalidOperationException($"Missing binding for feature factory `{factory}`.");
+                }
+            }
+        }
+
         private class Processor
         {
             private readonly List<INinjectModule> modules = new List<INinjectModule>();
             private readonly List<Tuple<Dependency, Type>> dependencies = new List<Tuple<Dependency, Type>>();
             private readonly List<INinjectModule> extensions = new List<INinjectModule>();
             private readonly List<Type> factories = new List<Type>();
+            private readonly List<Feature> features = new List<Feature>(); 
 
             private readonly Queue<Feature> featureQueue;
 
@@ -96,16 +106,17 @@ namespace Ninject.Features
                 {
                     Feature feature = this.featureQueue.Dequeue();
 
+                    this.features.Add(feature);
+                    this.factories.Add(feature.FactoryType);
+
                     this.AddExtensionsFrom(feature);
                     this.AddModulesFrom(feature);
                     this.AddDependenciesFrom(feature);
 
-                    this.factories.Add(feature.FactoryType);
-
                     this.EnqueueSubFeaturesFrom(feature);
                 }
 
-                return new Result(this.modules, this.dependencies, this.extensions, this.factories);
+                return new Result(this.features, this.modules, this.dependencies, this.extensions, this.factories);
             }
 
             private void AddExtensionsFrom(Feature feature)
@@ -167,25 +178,24 @@ namespace Ninject.Features
 
         private class Result
         {
-            public Result(
-                IEnumerable<INinjectModule> modules, 
-                IEnumerable<Tuple<Dependency, Type>> dependencies, 
-                IEnumerable<INinjectModule> extensions,
-                IEnumerable<Type> factories)
+            public Result(IEnumerable<Feature> features, IEnumerable<INinjectModule> modules, IEnumerable<Tuple<Dependency, Type>> dependencies, IEnumerable<INinjectModule> extensions, IEnumerable<Type> factories)
             {
+                this.Features = features;
                 this.Extensions = extensions;
                 this.Factories = factories;
                 this.Modules = modules;
                 this.Dependencies = dependencies;
             }
 
-            public IEnumerable<INinjectModule> Modules { get; private set; }
+            public IEnumerable<INinjectModule> Modules { get; }
 
-            public IEnumerable<Tuple<Dependency, Type>> Dependencies { get; private set; }
+            public IEnumerable<Tuple<Dependency, Type>> Dependencies { get; }
 
-            public IEnumerable<INinjectModule> Extensions { get; private set; }
+            public IEnumerable<Feature> Features { get; }
 
-            public IEnumerable<Type> Factories { get; private set; }
+            public IEnumerable<INinjectModule> Extensions { get; }
+
+            public IEnumerable<Type> Factories { get; }
         }
     }
 }

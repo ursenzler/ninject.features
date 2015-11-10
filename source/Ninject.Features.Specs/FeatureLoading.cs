@@ -26,7 +26,6 @@ namespace Ninject.Features.Specs
 
     using Ninject.Extensions.Factory;
     using Ninject.Modules;
-
     using Xbehave;
 
     using Xunit;
@@ -38,13 +37,13 @@ namespace Ninject.Features.Specs
         [Scenario]
         public void Load(
             IKernel kernel,
-            FeatureModuleLoader loader)
+            FeatureLoader loader)
         {
             "establich a Ninject kernel"._(() => 
                 kernel = new StandardKernel());
 
             "establish feature module loader"._(() =>
-                loader = new FeatureModuleLoader(kernel));
+                loader = new FeatureLoader(kernel));
 
             "established binding for shared dependency instances"._(() =>
                 kernel.Bind<ISharedSingletonDependency>().To<SharedSingletonDependency>().InSingletonScope());
@@ -130,14 +129,14 @@ namespace Ninject.Features.Specs
         [Scenario]
         public void MissingFeatureFactory(
             IKernel kernel,
-            FeatureModuleLoader loader,
+            FeatureLoader loader,
             Exception exception)
         {
-            "establich a Ninject kernel"._(() =>
+            "establish a Ninject kernel"._(() =>
                 kernel = new StandardKernel());
 
             "establish feature module loader"._(() =>
-                loader = new FeatureModuleLoader(kernel));
+                loader = new FeatureLoader(kernel));
 
             "when loading a feature that misses the binding for its factory"._(() =>
                 exception = Record.Exception(() => loader.Load(new FeatureWithoutFactoryBinding())));
@@ -197,8 +196,6 @@ namespace Ninject.Features.Specs
             {
                 BoundModules.Add(this);
 
-                this.Bind<IFeatureFactoryA>().ToFactory();
-
                 this.Bind<ITree>().To<Tree>().InTransientScope();
             }
         }
@@ -249,8 +246,6 @@ namespace Ninject.Features.Specs
             public override void Load()
             {
                 BoundModules.Add(this);
-
-                this.Bind<IFeatureFactoryB>().ToFactory();
             }
         }
 
@@ -271,7 +266,6 @@ namespace Ninject.Features.Specs
         {
             public override void Load()
             {
-                this.Bind<IFeatureFactoryC>().ToFactory();
             }
         }
 
@@ -478,6 +472,9 @@ namespace Ninject.Features.Specs
 
         public class FeatureWithoutFactoryBinding : Feature<IFeatureFactoryA>
         {
+            public override void BindFeatureFactory(IKernel kernel)
+            {
+            }
         }
     }
 }

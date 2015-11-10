@@ -1,21 +1,17 @@
 ﻿namespace Ninject.Features.Sample.Specs
 {
-    using System.Collections;
-
     using FluentAssertions;
-
     using Ninject.Features.Sample.TimeStamping;
-
     using Xbehave;
 
-    public class DocumentWorkflowSpecs
+    public class WorkflowSpecs
     {
         [Scenario] 
         public void ProcessDocument(
             IWorkflowFactory factory,
             string output)
         {
-            const string Input = "some text to process in the specification";
+            const string Input = "some text to process with ä, Ö and ü to replace.";
             const int MaxLineLength = 10;
             const int ExtraCharactersInLine = 5; // brackets, space + \r\n
 
@@ -24,7 +20,7 @@
                     var timeProvider = new TransientTypeDependency<ITimeProvider, FakeTimeProvider>();
 
                     var kernel = new StandardKernel();
-                    var loader = new FeatureModuleLoader(kernel);
+                    var loader = new FeatureLoader(kernel);
                     
                     loader.Load(new WorkflowFeature(timeProvider));
                     factory = kernel.Get<IWorkflowFactory>();
