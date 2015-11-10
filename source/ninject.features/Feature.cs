@@ -21,10 +21,8 @@ namespace Ninject.Features
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
-    using Ninject.Extensions.Factory;
+
     using Ninject.Modules;
-    using Ninject.Syntax;
 
     public abstract class Feature
     {
@@ -44,31 +42,5 @@ namespace Ninject.Features
         public virtual IEnumerable<INinjectModule> Modules { get; } = Enumerable.Empty<INinjectModule>();
 
         public IEnumerable<Dependency> Dependencies { get; }
-
-        protected IEnumerable<INinjectModule> GetAssemblyNinjectModules(Assembly assembly)
-        {
-            return assembly.GetExportedTypes().Where(t =>
-                typeof(INinjectModule).IsAssignableFrom(t) &&
-                !t.IsAbstract &&
-                !t.IsInterface &&
-                t.GetConstructor(Type.EmptyTypes) != null)
-                .Select(type => (INinjectModule)Activator.CreateInstance(type));
-        }
-    }
-
-    public abstract class Feature<TFeatureFactory> : Feature
-        where TFeatureFactory : class
-    {
-        protected Feature(params Dependency[] dependencies)
-            : base(dependencies)
-        {
-        }
-
-        public override Type FactoryType => typeof(TFeatureFactory);
-
-        public override void BindFeatureFactory(IKernel kernel)
-        {
-            kernel.Bind<TFeatureFactory>().ToFactory(() => new TypeMatchingArgumentInheritanceInstanceProvider());
-        }
     }
 }

@@ -8,7 +8,7 @@
     {
         public static void Main(string[] args)
         {
-            string content = "this is some content that will be processed by this crazy sample code";
+            string content = "this is some content that will be processed by this crazy sample code to replace umlauts like ä, ö, ü";
             int maxLineLength = 15;
 
             Console.WriteLine($"input = {content}");
@@ -21,7 +21,7 @@
             featureModuleLoader.Load(new WorkflowFeature(timeProvider));
 
             // run
-            var appFactory = kernel.Get<IWorkflowFactory>();
+            var appFactory = kernel.Get<WorkflowFeature.IWorkflowFactory>();
             var workflow = appFactory.CreateWorkflow();
             var processedContent = workflow.Process(content, maxLineLength);
 

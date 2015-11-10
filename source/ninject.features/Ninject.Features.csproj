@@ -59,6 +59,7 @@
     <Compile Include="Dependency{T}.cs" />
     <Compile Include="Feature.cs" />
     <Compile Include="FeatureLoader.cs" />
+    <Compile Include="Feature{TFeatureFactory}.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

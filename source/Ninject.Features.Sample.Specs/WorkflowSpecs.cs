@@ -8,7 +8,7 @@
     {
         [Scenario] 
         public void ProcessDocument(
-            IWorkflowFactory factory,
+            WorkflowFeature.IWorkflowFactory factory,
             string output)
         {
             const string Input = "some text to process with ä, Ö and ü to replace.";
@@ -23,7 +23,7 @@
                     var loader = new FeatureLoader(kernel);
                     
                     loader.Load(new WorkflowFeature(timeProvider));
-                    factory = kernel.Get<IWorkflowFactory>();
+                    factory = kernel.Get<WorkflowFeature.IWorkflowFactory>();
                 });
             
             "when processing a document"._(() => 

@@ -7,8 +7,13 @@ namespace Ninject.Features.Sample
     using Ninject.Features.Sample.UmlautReplacing;
     using Ninject.Modules;
 
-    public class WorkflowFeature : Feature<IWorkflowFactory>
+    public class WorkflowFeature : Feature<WorkflowFeature.IWorkflowFactory>
     {
+        public interface IWorkflowFactory
+        {
+            IWorkflow CreateWorkflow();
+        }
+
         private readonly Dependency<ITimeProvider> timeProvider;
 
         public WorkflowFeature(Dependency<ITimeProvider> timeProvider)

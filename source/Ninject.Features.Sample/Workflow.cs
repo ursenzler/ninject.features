@@ -6,16 +6,16 @@
 
     public class Workflow : IWorkflow
     {
-        private readonly IUmlautReplacingFeatureFactory umlautReplacingFeatureFactory;
+        private readonly UmlautReplacingFeature.IUmlautReplacingFeatureFactory umlautReplacingFeatureFactory;
 
         private readonly LineWrappingFeature.ILineWrappingFeatureFactory lineWrappingFeatureFactory;
 
-        private readonly ITimeStampingFeatureFactory timeStampingFeatureFactory;
+        private readonly TimeStampingFeature.ITimeStampingFeatureFactory timeStampingFeatureFactory;
 
         public Workflow(
-            IUmlautReplacingFeatureFactory umlautReplacingFeatureFactory,
+            UmlautReplacingFeature.IUmlautReplacingFeatureFactory umlautReplacingFeatureFactory,
             LineWrappingFeature.ILineWrappingFeatureFactory lineWrappingFeatureFactory,
-            ITimeStampingFeatureFactory timeStampingFeatureFactory)
+            TimeStampingFeature.ITimeStampingFeatureFactory timeStampingFeatureFactory)
         {
             this.umlautReplacingFeatureFactory = umlautReplacingFeatureFactory;
             this.lineWrappingFeatureFactory = lineWrappingFeatureFactory;
