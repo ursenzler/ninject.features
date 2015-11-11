@@ -1,4 +1,4 @@
-﻿// <copyright file="AssemblyInfo.cs" company="Ninject.Features">
+﻿// <copyright file="TransientTypeDependency{T,TImplementation}.cs" company="Ninject.Features">
 //   Copyright (c)  2013-2015
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,14 @@
 //   limitations under the License.
 // </copyright>
 
-using System.Reflection;
-
-// General Information about an assembly is controlled through the following
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("Ninject.FeatureDumper")]
-[assembly: AssemblyDescription("")]
+namespace Ninject.Features
+{
+    public class TransientTypeDependency<T, TImplementation> : Dependency<T>
+        where TImplementation : T
+    {
+        public TransientTypeDependency()
+            : base(bind => bind.To<TImplementation>().InTransientScope())
+        {
+        }
+    }
+}

@@ -1,8 +1,8 @@
-﻿//-------------------------------------------------------------------------------
-// <copyright file="Feature.cs" company="Ninject.Features">
-//   Copyright (c) 2013-2014
+﻿// <copyright file="Feature.cs" company="Ninject.Features">
+//   Copyright (c)  2013-2015
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
+//
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
@@ -14,7 +14,6 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 // </copyright>
-//-------------------------------------------------------------------------------
 
 namespace Ninject.Features
 {
@@ -33,8 +32,6 @@ namespace Ninject.Features
 
         public abstract Type FactoryType { get; }
 
-        public abstract void BindFeatureFactory(IKernel kernel);
-
         public virtual IEnumerable<Feature> NeededFeatures => Enumerable.Empty<Feature>();
 
         public virtual IEnumerable<INinjectModule> NeededExtensions { get; } = Enumerable.Empty<INinjectModule>();
@@ -42,5 +39,7 @@ namespace Ninject.Features
         public virtual IEnumerable<INinjectModule> Modules { get; } = Enumerable.Empty<INinjectModule>();
 
         public IEnumerable<Dependency> Dependencies { get; }
+
+        public abstract void BindFeatureFactory(IKernel kernel);
     }
 }

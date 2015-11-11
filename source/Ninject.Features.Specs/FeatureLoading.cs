@@ -1,8 +1,8 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="FeatureLoading.cs" company="Appccelerate">
-//   Copyright (c) 2008-2015
+﻿// <copyright file="FeatureLoading.cs" company="Ninject.Features">
+//   Copyright (c)  2013-2015
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
+//
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
@@ -14,7 +14,6 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 namespace Ninject.Features.Specs
 {
@@ -33,13 +32,13 @@ namespace Ninject.Features.Specs
     public class FeatureLoading
     {
         private static readonly List<NinjectModule> BoundModules = new List<NinjectModule>();
-            
+
         [Scenario]
         public void Load(
             IKernel kernel,
             FeatureLoader loader)
         {
-            "establich a Ninject kernel"._(() => 
+            "establish a Ninject kernel"._(() =>
                 kernel = new StandardKernel());
 
             "establish feature module loader"._(() =>
@@ -77,7 +76,7 @@ namespace Ninject.Features.Specs
                         nameof(ExtensionModuleB),
                         nameof(ExtensionModuleC)));
 
-            "it should load extension modules prior to the other modules"._(() => 
+            "it should load extension modules prior to the other modules"._(() =>
                     BoundModules.Select(x => x.Name.Split('+').Last())
                         .Should().ContainInOrder( // modules from feature A
                             nameof(ExtensionModuleA),
@@ -153,7 +152,7 @@ namespace Ninject.Features.Specs
             private Dependency<IDependencyB> b;
 
             public FeatureA(
-                Dependency<ITransientDependency> a, 
+                Dependency<ITransientDependency> a,
                 Dependency<IDependencyB> b,
                 Dependency<ISharedSingletonDependency> c,
                 Dependency<IFeatureWideDependency> featureWide)
@@ -205,7 +204,7 @@ namespace Ninject.Features.Specs
             private readonly Dependency<IDependencyB> b;
 
             public FeatureB(
-                Dependency<ITransientDependency> a, 
+                Dependency<ITransientDependency> a,
                 Dependency<IDependencyB> b,
                 Dependency<ISharedSingletonDependency> c,
                 Dependency<IFeatureWideDependency> featureWide)
@@ -213,7 +212,7 @@ namespace Ninject.Features.Specs
             {
                 this.b = b;
             }
-            
+
             public override IEnumerable<Feature> NeededFeatures
             {
                 get
@@ -407,7 +406,9 @@ namespace Ninject.Features.Specs
         public interface IFeatureFactoryB
         {
             ITransientDependency CreateTransientDependency();
+
             ISharedSingletonDependency CreateSharedSingletonDependency();
+
             IFeatureWideDependency CreateFeatureWideDependency();
         }
 
@@ -427,6 +428,7 @@ namespace Ninject.Features.Specs
         public interface ITree
         {
             Child1 Child1 { get; }
+
             Child2 Child2 { get; }
         }
 
@@ -439,6 +441,7 @@ namespace Ninject.Features.Specs
             }
 
             public Child1 Child1 { get; }
+
             public Child2 Child2 { get; }
         }
 

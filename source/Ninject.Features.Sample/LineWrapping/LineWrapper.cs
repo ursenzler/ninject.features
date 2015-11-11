@@ -1,4 +1,8 @@
-﻿namespace Ninject.Features.Sample.LineWrapping
+﻿// <copyright file="LineWrapper.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace Ninject.Features.Sample.LineWrapping
 {
     using System.Text;
 

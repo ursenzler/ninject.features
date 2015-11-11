@@ -1,3 +1,7 @@
+// <copyright file="TimeStamper.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
 namespace Ninject.Features.Sample.TimeStamping
 {
     using System;

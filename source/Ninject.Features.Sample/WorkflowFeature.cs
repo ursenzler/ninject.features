@@ -9,16 +9,16 @@ namespace Ninject.Features.Sample
 
     public class WorkflowFeature : Feature<WorkflowFeature.IWorkflowFactory>
     {
-        public interface IWorkflowFactory
-        {
-            IWorkflow CreateWorkflow();
-        }
-
         private readonly Dependency<ITimeProvider> timeProvider;
 
         public WorkflowFeature(Dependency<ITimeProvider> timeProvider)
         {
             this.timeProvider = timeProvider;
+        }
+
+        public interface IWorkflowFactory
+        {
+            IWorkflow CreateWorkflow();
         }
 
         public override IEnumerable<Feature> NeededFeatures

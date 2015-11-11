@@ -1,8 +1,8 @@
-﻿//-------------------------------------------------------------------------------
-// <copyright file="FeatureLoader.cs" company="Ninject.Features">
-//   Copyright (c) 2013-2014
+﻿// <copyright file="FeatureLoader.cs" company="Ninject.Features">
+//   Copyright (c)  2013-2015
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
+//
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
@@ -14,7 +14,6 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 // </copyright>
-//-------------------------------------------------------------------------------
 
 namespace Ninject.Features
 {
@@ -91,7 +90,7 @@ namespace Ninject.Features
             private readonly List<Tuple<Dependency, Type>> dependencies = new List<Tuple<Dependency, Type>>();
             private readonly List<INinjectModule> extensions = new List<INinjectModule>();
             private readonly List<Type> factories = new List<Type>();
-            private readonly List<Feature> features = new List<Feature>(); 
+            private readonly List<Feature> features = new List<Feature>();
 
             private readonly Queue<Feature> featureQueue;
 

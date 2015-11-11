@@ -4,8 +4,13 @@
 
     using Ninject.Modules;
 
-    public class TimeStampingFeature : Feature<ITimeStampingFeatureFactory>
+    public class TimeStampingFeature : Feature<TimeStampingFeature.ITimeStampingFeatureFactory>
     {
+        public interface ITimeStampingFeatureFactory
+        {
+            ITimeStamper CreateTimeStamper();
+        }
+
         public TimeStampingFeature(Dependency<ITimeProvider> timeProvider)
             : base(timeProvider)
         {
