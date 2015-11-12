@@ -17,30 +17,47 @@
 
 namespace Ninject.FeatureDumper
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
 
     using Appccelerate.IO;
 
     public class TgfWriter
     {
-        public void WriteTgfFile(AbsoluteFilePath outputPath, Features features)
+        public void WriteTgfFile(
+            AbsoluteFilePath outputPath,
+            Features features,
+            bool includeFactories,
+            bool includeDependencies)
         {
             using (var writer = new StreamWriter(outputPath))
             {
-                var list = new List<Type>(features.AllFeatures);
-                foreach (var type in list)
+                var list = new List<FeatureInfo>(features.AllFeatures);
+                foreach (var featureInfo in list)
                 {
-                    writer.WriteLine(list.IndexOf(type) + " " + type.Name);
+                    var feature = $"{list.IndexOf(featureInfo)} {featureInfo.Feature.Name}";
+
+                    if (includeFactories && featureInfo.Factory != null)
+                    {
+                        feature += $" Factory = { featureInfo.Factory?.Name}";
+                    }
+
+                    if (includeDependencies && featureInfo.Dependencies.Any())
+                    {
+                        feature += $" Dependencies = { featureInfo.Dependencies.Aggregate(string.Empty, (a, v) => $"{a}, {v}")}";
+                    }
+
+                    writer.WriteLine(feature);
                 }
 
+                var index = list.Select(i => i.Feature).ToList();
                 writer.WriteLine("#");
 
                 foreach (var dependency in features.References)
                 {
                     writer.WriteLine(
-                        list.IndexOf(dependency.Feature) + " " + list.IndexOf(dependency.NeededFeature));
+                        index.IndexOf(dependency.Feature) + " " + index.IndexOf(dependency.NeededFeature));
                 }
             }
         }

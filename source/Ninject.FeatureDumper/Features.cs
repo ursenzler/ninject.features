@@ -22,14 +22,30 @@ namespace Ninject.FeatureDumper
 
     public class Features
     {
-        public Features(IReadOnlyCollection<Type> allFeatures, IReadOnlyCollection<Reference> references)
+        public Features(IReadOnlyCollection<FeatureInfo> allFeatures, IReadOnlyCollection<Reference> references)
         {
             this.AllFeatures = allFeatures;
             this.References = references;
         }
 
-        public IReadOnlyCollection<Type> AllFeatures { get; private set; }
+        public IReadOnlyCollection<FeatureInfo> AllFeatures { get; private set; }
 
         public IReadOnlyCollection<Reference> References { get; private set; }
+    }
+
+    public struct FeatureInfo
+    {
+        public FeatureInfo(Type feature, Type factory, IEnumerable<Type> dependencies)
+        {
+            this.Feature = feature;
+            this.Factory = factory;
+            this.Dependencies = dependencies;
+        }
+
+        public Type Feature { get; }
+
+        public Type Factory { get; }
+
+        public IEnumerable<Type> Dependencies { get; set; }
     }
 }

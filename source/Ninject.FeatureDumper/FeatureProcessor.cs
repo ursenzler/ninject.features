@@ -27,7 +27,7 @@ namespace Ninject.FeatureDumper
     public class FeatureProcessor
     {
         private readonly HashSet<Tuple<Type, Type>> chain = new HashSet<Tuple<Type, Type>>();
-        private readonly HashSet<Type> allFeatures = new HashSet<Type>();
+        private readonly HashSet<FeatureInfo> allFeatures = new HashSet<FeatureInfo>();
 
         public Features ProcessAssemblies(IEnumerable<Assembly> assemblies)
         {
@@ -57,6 +57,11 @@ namespace Ninject.FeatureDumper
         {
             Console.WriteLine("found feature " + feature.Name + " (" + feature.FullName + ")");
 
+            if (this.allFeatures.Any(x => x.Feature == feature))
+            {
+                return;
+            }
+
             if (feature.ContainsGenericParameters)
             {
                 Console.WriteLine($"skipping feature {feature.Name} because it contains generic parameters.");
@@ -78,7 +83,10 @@ namespace Ninject.FeatureDumper
                 instance = (Feature)Activator.CreateInstance(feature);
             }
 
-            this.allFeatures.Add(feature);
+            var factory = this.FindFactory(feature);
+            var dependencies = this.FindDependencies(feature);
+
+            this.allFeatures.Add(new FeatureInfo(feature, factory, dependencies));
 
             IList<Feature> neededFeatures = instance.NeededFeatures.ToList();
             foreach (Feature neededFeature in neededFeatures)
@@ -90,6 +98,41 @@ namespace Ninject.FeatureDumper
 
                 this.ProcessFeature(neededFeature.GetType());
             }
+        }
+
+        private IEnumerable<Type> FindDependencies(Type feature)
+        {
+            var constructor = feature.GetConstructors().OrderBy(c => c.GetParameters().Length).FirstOrDefault();
+
+            if (constructor != null)
+            {
+                return constructor
+                    .GetParameters()
+                    .Where(a => IsSubclassOfRawGeneric(typeof(Dependency<>), a.ParameterType))
+                    .Select(a => a.ParameterType).ToList();
+            }
+
+            return Enumerable.Empty<Type>();
+        }
+
+        private Type FindFactory(Type feature)
+        {
+            if (IsSubclassOfRawGeneric(typeof(Feature<>), feature))
+            {
+                return feature.BaseType.GetGenericArguments()[0];
+            }
+
+            if (feature.BaseType == null)
+            {
+                return null;
+            }
+
+            return this.FindFactory(feature.BaseType);
+        }
+
+        static bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
+        {
+            return toCheck.BaseType != null && generic == (toCheck.BaseType.IsGenericType ? toCheck.BaseType.GetGenericTypeDefinition() : toCheck.BaseType);
         }
     }
 }

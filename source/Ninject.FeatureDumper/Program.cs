@@ -31,16 +31,22 @@ namespace Ninject.FeatureDumper
             {
                 AbsoluteFilePath outputPath = null;
                 AbsoluteFolderPath assemblyFolder = null;
+                bool includeFactories = false;
+                bool includeDependencies = false;
                 AbsoluteFilePath yedPath = @"C:\Program Files (x86)\yWorks\yEd\yEd.exe";
 
                 CommandLineConfiguration commandLineConfiguration = CommandLineParserConfigurator
                     .Create()
-                        .WithPositional(path => outputPath = path)
+                        .WithNamed("output", path => outputPath = path)
                             .Required()
                             .DescribedBy("output.tgf", "The absolute output file path. Must have extension .tgf")
-                        .WithPositional(folder => assemblyFolder = folder)
+                        .WithNamed("folder", folder => assemblyFolder = folder)
                             .Required()
                             .DescribedBy("binary folder", "The folder containing the binaries to analyze. Must contain all direct and indirect dependencies, too.")
+                        .WithSwitch("factories", () => includeFactories = true)
+                            .DescribedBy("Include information about feature factory.")
+                        .WithSwitch("dependencies", () => includeDependencies = true)
+                            .DescribedBy("Include information about feature dependencies.")
                         .WithNamed("-yed", path => yedPath = path)
                             .DescribedBy("yEd path", @"Path specifing location of yEd. If not specified, the default installation path is used (C:\Program Files (x86)\yWorks\yEd\yEd.exe).")
                     .BuildConfiguration();
@@ -62,7 +68,7 @@ namespace Ninject.FeatureDumper
                 Features features = featureProcessor.ProcessAssemblies(assemblies);
 
                 var tgfWriter = new TgfWriter();
-                tgfWriter.WriteTgfFile(outputPath, features);
+                tgfWriter.WriteTgfFile(outputPath, features, includeFactories, includeDependencies);
 
                 StartYEd(yedPath, outputPath);
 
