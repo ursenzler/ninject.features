@@ -59,7 +59,8 @@ namespace Ninject.Features.Specs
                         new Dependency<IDependencyB>(bind => bind.To<DependencyB>().InSingletonScope()),
                         new KernelGetDependency<ISharedSingletonDependency>(),
                         new FeatureWideDependency<IFeatureWideDependency, FeatureWideDependency>()),
-                    new FeatureC()));
+                    new FeatureC(),
+                    new FacadeLessFeature()));
 
             "it should load all modules"._(() =>
                 kernel.GetModules().Select(x => x.Name.Split('+').Last())
@@ -67,7 +68,8 @@ namespace Ninject.Features.Specs
                         nameof(ModuleA),
                         nameof(SharedModule),
                         nameof(ModuleC),
-                        nameof(ModuleD)));
+                        nameof(ModuleD),
+                        nameof(FacadeLessFeatureModule)));
 
             "it should load all extension modules"._(() =>
                 kernel.GetModules().Select(x => x.Name.Split('+').Last())
@@ -496,6 +498,24 @@ namespace Ninject.Features.Specs
         public class FeatureWithoutFactoryBinding : Feature<IFeatureFactoryA>
         {
             public override void BindFeatureFactory(IKernel kernel)
+            {
+            }
+        }
+
+        public class FacadeLessFeature : Feature
+        {
+            public override IEnumerable<INinjectModule> Modules
+            {
+                get
+                {
+                    yield return new FacadeLessFeatureModule();
+                }
+            }
+        }
+
+        public class FacadeLessFeatureModule : NinjectModule
+        {
+            public override void Load()
             {
             }
         }

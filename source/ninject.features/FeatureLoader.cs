@@ -52,7 +52,7 @@ namespace Ninject.Features
 
         private void BindFactories(IEnumerable<Feature> features)
         {
-            foreach (var feature in features)
+            foreach (var feature in features.OfType<IFactoryFeature>())
             {
                 feature.BindFeatureFactory(this.kernel);
             }
@@ -108,7 +108,12 @@ namespace Ninject.Features
                     this.AddFeature(feature);
                     this.AddExtensionsFrom(feature);
                     this.AddModulesFrom(feature);
-                    this.AddDependenciesFrom(feature);
+
+                    var factoryBinder = feature as IFactoryFeature;
+                    if (factoryBinder != null)
+                    {
+                        this.AddDependenciesFrom(factoryBinder);
+                    }
 
                     this.EnqueueSubFeaturesFrom(feature);
                 }
@@ -121,7 +126,12 @@ namespace Ninject.Features
                 if (this.NotAlreadyKnownFeature(feature))
                 {
                     this.features.Add(feature);
-                    this.factories.Add(feature.FactoryType);
+
+                    var factoryFeature = feature as IFactoryFeature;
+                    if (factoryFeature != null)
+                    {
+                        this.factories.Add(factoryFeature.FactoryType);
+                    }
                 }
             }
 
@@ -147,7 +157,7 @@ namespace Ninject.Features
                 }
             }
 
-            private void AddDependenciesFrom(Feature feature)
+            private void AddDependenciesFrom(IFactoryFeature feature)
             {
                 foreach (Dependency dependency in feature.Dependencies)
                 {

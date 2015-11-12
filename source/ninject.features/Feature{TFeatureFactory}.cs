@@ -18,20 +18,23 @@
 namespace Ninject.Features
 {
     using System;
+    using System.Collections.Generic;
 
     using Ninject.Extensions.Factory;
 
-    public abstract class Feature<TFeatureFactory> : Feature
+    public abstract class Feature<TFeatureFactory> : Feature, IFactoryFeature
         where TFeatureFactory : class
     {
         protected Feature(params Dependency[] dependencies)
-            : base(dependencies)
         {
+            this.Dependencies = dependencies;
         }
 
-        public override Type FactoryType => typeof(TFeatureFactory);
+        public Type FactoryType => typeof(TFeatureFactory);
 
-        public override void BindFeatureFactory(IKernel kernel)
+        public IEnumerable<Dependency> Dependencies { get; }
+
+        public virtual void BindFeatureFactory(IKernel kernel)
         {
             kernel.Bind<TFeatureFactory>().ToFactory(() => new TypeMatchingArgumentInheritanceInstanceProvider());
         }

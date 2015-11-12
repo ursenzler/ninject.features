@@ -1,4 +1,4 @@
-﻿// <copyright file="Feature.cs" company="Ninject.Features">
+﻿// <copyright file="IFactoryFeature.cs" company="Ninject.Features">
 //   Copyright (c)  2013-2015
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +17,15 @@
 
 namespace Ninject.Features
 {
+    using System;
     using System.Collections.Generic;
-    using System.Linq;
 
-    using Ninject.Modules;
-
-    public abstract class Feature
+    public interface IFactoryFeature
     {
-        public virtual IEnumerable<Feature> NeededFeatures => Enumerable.Empty<Feature>();
+        Type FactoryType { get; }
 
-        public virtual IEnumerable<INinjectModule> NeededExtensions { get; } = Enumerable.Empty<INinjectModule>();
+        IEnumerable<Dependency> Dependencies { get; }
 
-        public virtual IEnumerable<INinjectModule> Modules { get; } = Enumerable.Empty<INinjectModule>();
+        void BindFeatureFactory(IKernel kernel);
     }
 }
