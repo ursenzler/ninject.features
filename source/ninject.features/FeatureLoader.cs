@@ -105,9 +105,7 @@ namespace Ninject.Features
                 {
                     Feature feature = this.featureQueue.Dequeue();
 
-                    this.features.Add(feature);
-                    this.factories.Add(feature.FactoryType);
-
+                    this.AddFeature(feature);
                     this.AddExtensionsFrom(feature);
                     this.AddModulesFrom(feature);
                     this.AddDependenciesFrom(feature);
@@ -116,6 +114,15 @@ namespace Ninject.Features
                 }
 
                 return new Result(this.features, this.modules, this.dependencies, this.extensions, this.factories);
+            }
+
+            private void AddFeature(Feature feature)
+            {
+                if (this.NotAlreadyKnownFeature(feature))
+                {
+                    this.features.Add(feature);
+                    this.factories.Add(feature.FactoryType);
+                }
             }
 
             private void AddExtensionsFrom(Feature feature)
@@ -157,6 +164,11 @@ namespace Ninject.Features
                 {
                     this.featureQueue.Enqueue(neededFeature);
                 }
+            }
+
+            private bool NotAlreadyKnownFeature(Feature feature)
+            {
+                return this.features.All(knownFeature => knownFeature.GetType() != feature.GetType());
             }
 
             private bool NotAlreadyKnownExtension(INinjectModule extension)

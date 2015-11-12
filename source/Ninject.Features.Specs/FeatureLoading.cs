@@ -126,6 +126,35 @@ namespace Ninject.Features.Specs
         }
 
         [Scenario]
+        public void BindsFactoriesOnlyOnce(
+            IKernel kernel,
+            FeatureLoader loader)
+        {
+            "establish a Ninject kernel"._(() =>
+                kernel = new StandardKernel());
+
+            "establish feature module loader"._(() =>
+                loader = new FeatureLoader(kernel));
+
+            "when loading features with shared sub features"._(() =>
+                loader.Load(
+                    new FeatureA(
+                        new TransientTypeDependency<ITransientDependency, TransientDependency>(),
+                        new Dependency<IDependencyB>(bind => bind.To<DependencyB>().InSingletonScope()),
+                        new KernelGetDependency<ISharedSingletonDependency>(),
+                        new FeatureWideDependency<IFeatureWideDependency, FeatureWideDependency>()),
+                    new FeatureB(
+                        new TransientTypeDependency<ITransientDependency, TransientDependency>(),
+                        new Dependency<IDependencyB>(bind => bind.To<DependencyB>().InSingletonScope()),
+                        new KernelGetDependency<ISharedSingletonDependency>(),
+                        new FeatureWideDependency<IFeatureWideDependency, FeatureWideDependency>()),
+                    new FeatureC()));
+
+            "it should bind feature factory of features that occur multiple times in feature tree, only once"._(() =>
+                Record.Exception(() => kernel.Get<ISubFeatureFactoryA>()).Should().BeNull());
+        }
+
+        [Scenario]
         public void MissingFeatureFactory(
             IKernel kernel,
             FeatureLoader loader,
@@ -279,18 +308,9 @@ namespace Ninject.Features.Specs
             {
                 get
                 {
-                    yield return new SubFeatureAModule();
                     yield return new SharedModule();
                     yield return new ModuleC();
                 }
-            }
-        }
-
-        public class SubFeatureAModule : NinjectModule
-        {
-            public override void Load()
-            {
-                this.Bind<ISubFeatureFactoryA>().ToFactory();
             }
         }
 
