@@ -57,11 +57,26 @@ namespace Ninject.FeatureDumper
         {
             Console.WriteLine("found feature " + feature.Name + " (" + feature.FullName + ")");
 
-            var constructor = feature.GetConstructors().OrderBy(c => c.GetParameters().Length).First();
+            if (feature.ContainsGenericParameters)
+            {
+                Console.WriteLine($"skipping feature {feature.Name} because it contains generic parameters.");
 
-            object[] arguments = new object[constructor.GetParameters().Length];
+                return;
+            }
 
-            var instance = (Feature)Activator.CreateInstance(feature, arguments);
+            var constructor = feature.GetConstructors().OrderBy(c => c.GetParameters().Length).FirstOrDefault();
+
+            Feature instance;
+            if (constructor != null)
+            {
+                object[] arguments = new object[constructor.GetParameters().Length];
+
+                instance = (Feature)Activator.CreateInstance(feature, arguments);
+            }
+            else
+            {
+                instance = (Feature)Activator.CreateInstance(feature);
+            }
 
             this.allFeatures.Add(feature);
 

@@ -38,7 +38,9 @@ namespace Ninject.FeatureDumper
 
             List<string> assemblyPaths =
                 Directory.EnumerateFiles(assemblyFolder, "*.exe")
-                    .Union(Directory.EnumerateFiles(assemblyFolder, "*.dll")).ToList();
+                    .Union(Directory.EnumerateFiles(assemblyFolder, "*.dll"))
+                    .Where(path => !path.EndsWith("Ninject.Features.dll"))
+                    .ToList();
 
             Console.WriteLine("found assemblies:");
             foreach (var assemblyPath in assemblyPaths)
