@@ -45,7 +45,7 @@ namespace Ninject.FeatureDumper
 
                     if (includeDependencies && featureInfo.Dependencies.Any())
                     {
-                        feature += $" Dependencies = { featureInfo.Dependencies.Aggregate(string.Empty, (a, v) => $"{a}, {v}")}";
+                        feature += $" Dependencies = { string.Join(", ", featureInfo.Dependencies.Select(d => d.Name))}";
                     }
 
                     writer.WriteLine(feature);

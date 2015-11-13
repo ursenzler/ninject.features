@@ -108,8 +108,8 @@ namespace Ninject.FeatureDumper
             {
                 return constructor
                     .GetParameters()
-                    .Where(a => IsSubclassOfRawGeneric(typeof(Dependency<>), a.ParameterType))
-                    .Select(a => a.ParameterType).ToList();
+                    .Select(a => GetGenericTypeOf(typeof(Dependency<>), a.ParameterType))
+                    .Where(type => type != null).ToList();
             }
 
             return Enumerable.Empty<Type>();
@@ -117,7 +117,7 @@ namespace Ninject.FeatureDumper
 
         private Type FindFactory(Type feature)
         {
-            if (IsSubclassOfRawGeneric(typeof(Feature<>), feature))
+            if (IsDirectSubclassOfRawGeneric(typeof(Feature<>), feature))
             {
                 return feature.BaseType.GetGenericArguments()[0];
             }
@@ -130,7 +130,39 @@ namespace Ninject.FeatureDumper
             return this.FindFactory(feature.BaseType);
         }
 
-        static bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
+        public static Type GetGenericTypeOf(Type baseType, Type toCheck)
+        {
+            while (toCheck != typeof(object))
+            {
+                Type cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (baseType == cur)
+                {
+                    return toCheck.GenericTypeArguments[0];
+                }
+
+                toCheck = toCheck.BaseType;
+            }
+
+            return null;
+        }
+
+        public static bool IsSubclassOfRawGeneric(Type baseType, Type toCheck)
+        {
+            while (toCheck != typeof(object))
+            {
+                Type cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (baseType == cur)
+                {
+                    return true;
+                }
+
+                toCheck = toCheck.BaseType;
+            }
+
+            return false;
+        }
+
+        static bool IsDirectSubclassOfRawGeneric(Type generic, Type toCheck)
         {
             return toCheck.BaseType != null && generic == (toCheck.BaseType.IsGenericType ? toCheck.BaseType.GetGenericTypeDefinition() : toCheck.BaseType);
         }
