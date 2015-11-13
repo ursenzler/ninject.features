@@ -1,3 +1,6 @@
+I'm currently building a documentation site at http://ursenzler.github.io/ninject.features/ _work in progress :-)_
+
+
 ninject.features
 ================
 
