@@ -23,7 +23,7 @@ namespace Ninject.FeatureDumper
     using Appccelerate.CommandLineParser;
     using Appccelerate.IO;
 
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
@@ -94,16 +94,12 @@ namespace Ninject.FeatureDumper
 
         private static void StartYEd(AbsoluteFilePath yedPath, AbsoluteFilePath outputPath)
         {
-            var yEd = new Process
-                      {
-                          StartInfo =
-                          {
-                              FileName = yedPath,
-                              Arguments = outputPath
-                          }
-                      };
+            using (var yEd = new Process())
+            {
+                yEd.StartInfo = new ProcessStartInfo(yedPath, outputPath);
 
-            yEd.Start();
+                yEd.Start();
+            }
         }
     }
 }

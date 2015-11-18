@@ -19,3 +19,4 @@ using System.Reflection;
 
 [assembly: AssemblyTitle("Ninject.Features.Specs")]
 [assembly: AssemblyDescription("")]
+[assembly: System.Runtime.InteropServices.ComVisible(false)]

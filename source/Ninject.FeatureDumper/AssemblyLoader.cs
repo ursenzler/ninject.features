@@ -30,6 +30,7 @@ namespace Ninject.FeatureDumper
     {
         private readonly List<Assembly> loadedAssemblies = new List<Assembly>();
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Ninject.FeatureDumper.AssemblyResolveHandler", Justification = "Handler is used only during method.")]
         public IEnumerable<Assembly> LoadAssemblies(AbsoluteFolderPath assemblyFolder)
         {
             var assemblyResolveHandler = new AssemblyResolveHandler(assemblyFolder);
@@ -39,7 +40,7 @@ namespace Ninject.FeatureDumper
             List<string> assemblyPaths =
                 Directory.EnumerateFiles(assemblyFolder, "*.exe")
                     .Union(Directory.EnumerateFiles(assemblyFolder, "*.dll"))
-                    .Where(path => !path.EndsWith("Ninject.Features.dll"))
+                    .Where(path => !path.EndsWith("Ninject.Features.dll", StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
             Console.WriteLine("found assemblies:");
@@ -58,6 +59,7 @@ namespace Ninject.FeatureDumper
             return this.loadedAssemblies;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "we don't care why")]
         private void AddReferencedAssemblies(Assembly current)
         {
             if (this.loadedAssemblies.Contains(current, new AssemblyComparer()))
@@ -82,16 +84,26 @@ namespace Ninject.FeatureDumper
             }
         }
 
-        public class AssemblyComparer : IEqualityComparer<Assembly>
+        private class AssemblyComparer : IEqualityComparer<Assembly>
         {
             public bool Equals(Assembly x, Assembly y)
             {
+                if (x == null && y == null)
+                {
+                    return true;
+                }
+
+                if (x == null || y == null)
+                {
+                    return false;
+                }
+
                 return x.FullName == y.FullName;
             }
 
             public int GetHashCode(Assembly obj)
             {
-                return obj.GetHashCode();
+                return obj?.GetHashCode() ?? 0;
             }
         }
     }

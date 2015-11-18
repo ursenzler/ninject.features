@@ -460,7 +460,7 @@ namespace Ninject.Features.Specs
             Child2 Child2 { get; }
         }
 
-        private class Tree : ITree
+        public class Tree : ITree
         {
             public Tree(Child1 child1, Child2 child2)
             {

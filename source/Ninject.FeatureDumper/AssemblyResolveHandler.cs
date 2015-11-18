@@ -35,9 +35,10 @@ namespace Ninject.FeatureDumper
             currentDomain.AssemblyResolve += new ResolveEventHandler(this.HandleUnresolvedAssembly);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", MessageId = "System.Reflection.Assembly.LoadFrom", Justification = "we don't care")]
         private Assembly HandleUnresolvedAssembly(object sender, ResolveEventArgs args)
         {
-            string assemblyName = args.Name.Substring(0, args.Name.IndexOf(",", StringComparison.InvariantCulture));
+            string assemblyName = args.Name.Substring(0, args.Name.IndexOf(",", StringComparison.OrdinalIgnoreCase));
             string assemblyFile = Path.Combine(this.assemblyFolder, assemblyName + ".dll");
             var assembly = Assembly.LoadFrom(assemblyFile);
 

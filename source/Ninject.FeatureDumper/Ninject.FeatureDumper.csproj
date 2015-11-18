@@ -39,6 +39,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet />
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>ninject.features.featuredumper.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Appccelerate.CommandLineParser, Version=1.2.0.0, Culture=neutral, PublicKeyToken=917bca444d1f2b4c, processorArchitecture=MSIL">
@@ -52,6 +59,10 @@
     <Reference Include="Appccelerate.IO, Version=2.15.0.0, Culture=neutral, PublicKeyToken=917bca444d1f2b4c, processorArchitecture=MSIL">
       <HintPath>..\packages\Appccelerate.IO.2.15.0\lib\net45\Appccelerate.IO.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="NullGuard, Version=1.4.4.0, Culture=neutral, PublicKeyToken=1958ac8092168428, processorArchitecture=MSIL">
+      <HintPath>..\packages\NullGuard.Fody.1.4.4\lib\dotnet\NullGuard.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -75,6 +86,7 @@
     <None Include="Ninject.FeatureDumper.nuspec">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="ninject.features.featuredumper.snk" />
     <None Include="packages.config" />
     <None Include="Settings.StyleCop" />
   </ItemGroup>
@@ -91,6 +103,9 @@
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0-beta015\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0-beta015\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0-beta015\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -112,12 +127,16 @@ copy $(TargetDir)Ninject.Features.dll $(TargetDir)package\tools</PostBuildEvent>
     <Error Condition="!Exists('..\packages\StyleCop.Analyzers.1.0.0-beta015\build\StyleCop.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\StyleCop.Analyzers.1.0.0-beta015\build\StyleCop.Analyzers.targets'))" />
     <Error Condition="!Exists('..\packages\Appccelerate.VersionTask.1.22.0\build\Appccelerate.VersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Appccelerate.VersionTask.1.22.0\build\Appccelerate.VersionTask.targets'))" />
     <Error Condition="!Exists('..\packages\Appccelerate.Development.Analyzers.1.26.0\build\Appccelerate.Development.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Appccelerate.Development.Analyzers.1.26.0\build\Appccelerate.Development.Analyzers.targets'))" />
+    <Error Condition="!Exists('..\packages\Fody.1.29.3\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.3\build\dotnet\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\NullGuard.Fody.1.4.4\build\dotnet\NullGuard.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NullGuard.Fody.1.4.4\build\dotnet\NullGuard.Fody.targets'))" />
   </Target>
   <Import Project="..\packages\Appccelerate.CheckNoBindingRedirectsTask.1.14.0\build\Appccelerate.CheckNoBindingRedirectsTask.targets" Condition="Exists('..\packages\Appccelerate.CheckNoBindingRedirectsTask.1.14.0\build\Appccelerate.CheckNoBindingRedirectsTask.targets')" />
   <Import Project="..\packages\Appccelerate.CheckHintPathTask.1.15.0\build\Appccelerate.CheckHintPathTask.targets" Condition="Exists('..\packages\Appccelerate.CheckHintPathTask.1.15.0\build\Appccelerate.CheckHintPathTask.targets')" />
   <Import Project="..\packages\StyleCop.Analyzers.1.0.0-beta015\build\StyleCop.Analyzers.targets" Condition="Exists('..\packages\StyleCop.Analyzers.1.0.0-beta015\build\StyleCop.Analyzers.targets')" />
   <Import Project="..\packages\Appccelerate.VersionTask.1.22.0\build\Appccelerate.VersionTask.targets" Condition="Exists('..\packages\Appccelerate.VersionTask.1.22.0\build\Appccelerate.VersionTask.targets')" />
   <Import Project="..\packages\Appccelerate.Development.Analyzers.1.26.0\build\Appccelerate.Development.Analyzers.targets" Condition="Exists('..\packages\Appccelerate.Development.Analyzers.1.26.0\build\Appccelerate.Development.Analyzers.targets')" />
+  <Import Project="..\packages\Fody.1.29.3\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.1.29.3\build\dotnet\Fody.targets')" />
+  <Import Project="..\packages\NullGuard.Fody.1.4.4\build\dotnet\NullGuard.Fody.targets" Condition="Exists('..\packages\NullGuard.Fody.1.4.4\build\dotnet\NullGuard.Fody.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -84,7 +84,7 @@ namespace Ninject.FeatureDumper
             }
 
             var factory = this.FindFactory(feature);
-            var dependencies = this.FindDependencies(feature);
+            var dependencies = FindDependencies(feature);
 
             this.allFeatures.Add(new FeatureInfo(feature, factory, dependencies));
 
@@ -100,7 +100,7 @@ namespace Ninject.FeatureDumper
             }
         }
 
-        private IEnumerable<Type> FindDependencies(Type feature)
+        private static IEnumerable<Type> FindDependencies(Type feature)
         {
             var constructor = feature.GetConstructors().OrderBy(c => c.GetParameters().Length).FirstOrDefault();
 
@@ -144,22 +144,6 @@ namespace Ninject.FeatureDumper
             }
 
             return null;
-        }
-
-        private static bool IsSubclassOfRawGeneric(Type baseType, Type toCheck)
-        {
-            while (toCheck != typeof(object))
-            {
-                Type cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-                if (baseType == cur)
-                {
-                    return true;
-                }
-
-                toCheck = toCheck.BaseType;
-            }
-
-            return false;
         }
 
         private static bool IsDirectSubclassOfRawGeneric(Type generic, Type toCheck)

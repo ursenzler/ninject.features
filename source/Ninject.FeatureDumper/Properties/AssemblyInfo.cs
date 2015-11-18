@@ -22,3 +22,5 @@ using System.Reflection;
 // associated with an assembly.
 [assembly: AssemblyTitle("Ninject.FeatureDumper")]
 [assembly: AssemblyDescription("")]
+[assembly: System.CLSCompliant(true)]
+[assembly: System.Runtime.InteropServices.ComVisible(false)]

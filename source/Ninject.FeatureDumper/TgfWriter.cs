@@ -25,6 +25,8 @@ namespace Ninject.FeatureDumper
 
     public class TgfWriter
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "keep it flexible for extension with other writers")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "it is a file path, not just a path")]
         public void WriteTgfFile(
             AbsoluteFilePath outputPath,
             Features features,

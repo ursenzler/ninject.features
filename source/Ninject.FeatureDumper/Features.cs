@@ -46,6 +46,6 @@ namespace Ninject.FeatureDumper
 
         public Type Factory { get; }
 
-        public IEnumerable<Type> Dependencies { get; set; }
+        public IEnumerable<Type> Dependencies { get; }
     }
 }
