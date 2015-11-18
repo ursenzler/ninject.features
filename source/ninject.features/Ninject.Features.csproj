@@ -71,6 +71,8 @@
     <None Include="Analyzers.ruleset" />
     <None Include="Ninject.Features.nuspec" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>

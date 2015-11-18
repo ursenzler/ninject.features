@@ -88,6 +88,8 @@
   <ItemGroup>
     <None Include="Analyzers.ruleset" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
