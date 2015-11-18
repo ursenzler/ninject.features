@@ -40,12 +40,12 @@ namespace Ninject.FeatureDumper
 
                     if (includeFactories && featureInfo.Factory != null)
                     {
-                        feature += $" Factory = { featureInfo.Factory?.Name}";
+                        feature += $" Factory = {featureInfo.Factory?.Name}";
                     }
 
                     if (includeDependencies && featureInfo.Dependencies.Any())
                     {
-                        feature += $" Dependencies = { string.Join(", ", featureInfo.Dependencies.Select(d => d.Name))}";
+                        feature += $" Dependencies = {string.Join(", ", featureInfo.Dependencies.Select(d => d.Name))}";
                     }
 
                     writer.WriteLine(feature);

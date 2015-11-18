@@ -1,5 +1,5 @@
-﻿// <copyright file="AssemblyInfo.cs" company="Appccelerate">
-//   Copyright (c)  2008-2015
+﻿// <copyright file="AssemblyInfo.cs" company="Ninject.Features">
+//   Copyright (c)  2013-2015
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //

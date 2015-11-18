@@ -51,12 +51,12 @@ namespace Ninject.Features.Specs
                 loader.Load(
                     new FeatureA(
                         new TransientTypeDependency<ITransientDependency, TransientDependency>(),
-                        new Dependency<IDependencyB>(bind => bind.To<DependencyB>().InSingletonScope()),
+                        new Dependency<IDependencyOfSharedFeature>(bind => bind.To<DependencyOfSharedFeature>().InSingletonScope()),
                         new KernelGetDependency<ISharedSingletonDependency>(),
                         new FeatureWideDependency<IFeatureWideDependency, FeatureWideDependency>()),
                     new FeatureB(
                         new TransientTypeDependency<ITransientDependency, TransientDependency>(),
-                        new Dependency<IDependencyB>(bind => bind.To<DependencyB>().InSingletonScope()),
+                        new Dependency<IDependencyOfSharedFeature>(bind => bind.To<DependencyOfSharedFeature>().InSingletonScope()),
                         new KernelGetDependency<ISharedSingletonDependency>(),
                         new FeatureWideDependency<IFeatureWideDependency, FeatureWideDependency>()),
                     new FeatureC(),
@@ -125,6 +125,12 @@ namespace Ninject.Features.Specs
 
                     a.Should().BeSameAs(b);
                 });
+
+            "it should not allow to get dependencies directly (without call to feature factory)."._(() =>
+                {
+                    var dependencyOfSharedFeature = kernel.TryGet<IDependencyOfSharedFeature>();
+                    dependencyOfSharedFeature.Should().BeNull();
+                });
         }
 
         [Scenario]
@@ -142,12 +148,12 @@ namespace Ninject.Features.Specs
                 loader.Load(
                     new FeatureA(
                         new TransientTypeDependency<ITransientDependency, TransientDependency>(),
-                        new Dependency<IDependencyB>(bind => bind.To<DependencyB>().InSingletonScope()),
+                        new Dependency<IDependencyOfSharedFeature>(bind => bind.To<DependencyOfSharedFeature>().InSingletonScope()),
                         new KernelGetDependency<ISharedSingletonDependency>(),
                         new FeatureWideDependency<IFeatureWideDependency, FeatureWideDependency>()),
                     new FeatureB(
                         new TransientTypeDependency<ITransientDependency, TransientDependency>(),
-                        new Dependency<IDependencyB>(bind => bind.To<DependencyB>().InSingletonScope()),
+                        new Dependency<IDependencyOfSharedFeature>(bind => bind.To<DependencyOfSharedFeature>().InSingletonScope()),
                         new KernelGetDependency<ISharedSingletonDependency>(),
                         new FeatureWideDependency<IFeatureWideDependency, FeatureWideDependency>()),
                     new FeatureC()));
@@ -180,23 +186,23 @@ namespace Ninject.Features.Specs
 
         public class FeatureA : Feature<IFeatureFactoryA>
         {
-            private Dependency<IDependencyB> b;
+            private Dependency<IDependencyOfSharedFeature> dependencyOfSharedFeature;
 
             public FeatureA(
                 Dependency<ITransientDependency> a,
-                Dependency<IDependencyB> b,
+                Dependency<IDependencyOfSharedFeature> dependencyOfSharedFeature,
                 Dependency<ISharedSingletonDependency> c,
                 Dependency<IFeatureWideDependency> featureWide)
                 : base(a, c, featureWide)
             {
-                this.b = b;
+                this.dependencyOfSharedFeature = dependencyOfSharedFeature;
             }
 
             public override IEnumerable<Feature> NeededFeatures
             {
                 get
                 {
-                    yield return new SharedSubFeature(this.b);
+                    yield return new SharedSubFeature(this.dependencyOfSharedFeature);
                 }
             }
 
@@ -232,23 +238,23 @@ namespace Ninject.Features.Specs
 
         public class FeatureB : Feature<IFeatureFactoryB>
         {
-            private readonly Dependency<IDependencyB> b;
+            private readonly Dependency<IDependencyOfSharedFeature> dependencyOfSharedFeature;
 
             public FeatureB(
                 Dependency<ITransientDependency> a,
-                Dependency<IDependencyB> b,
+                Dependency<IDependencyOfSharedFeature> dependencyOfSharedFeature,
                 Dependency<ISharedSingletonDependency> c,
                 Dependency<IFeatureWideDependency> featureWide)
                 : base(a, c, featureWide)
             {
-                this.b = b;
+                this.dependencyOfSharedFeature = dependencyOfSharedFeature;
             }
 
             public override IEnumerable<Feature> NeededFeatures
             {
                 get
                 {
-                    yield return new SharedSubFeature(this.b);
+                    yield return new SharedSubFeature(this.dependencyOfSharedFeature);
                     yield return new SubFeatureOfB();
                 }
             }
@@ -301,7 +307,7 @@ namespace Ninject.Features.Specs
 
         public class SharedSubFeature : Feature<ISubFeatureFactoryA>
         {
-            public SharedSubFeature(Dependency<IDependencyB> b)
+            public SharedSubFeature(Dependency<IDependencyOfSharedFeature> b)
                 : base(b)
             {
             }
@@ -396,7 +402,7 @@ namespace Ninject.Features.Specs
         {
         }
 
-        public interface IDependencyB
+        public interface IDependencyOfSharedFeature
         {
         }
 
@@ -408,7 +414,7 @@ namespace Ninject.Features.Specs
         {
         }
 
-        public class DependencyB : IDependencyB
+        public class DependencyOfSharedFeature : IDependencyOfSharedFeature
         {
         }
 
@@ -436,7 +442,7 @@ namespace Ninject.Features.Specs
 
         public interface ISubFeatureFactoryA
         {
-            IDependencyB CreateB();
+            IDependencyOfSharedFeature CreateB();
         }
 
         public interface ISubFeatureFactoryB

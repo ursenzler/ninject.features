@@ -130,7 +130,7 @@ namespace Ninject.FeatureDumper
             return this.FindFactory(feature.BaseType);
         }
 
-        public static Type GetGenericTypeOf(Type baseType, Type toCheck)
+        private static Type GetGenericTypeOf(Type baseType, Type toCheck)
         {
             while (toCheck != typeof(object))
             {
@@ -146,7 +146,7 @@ namespace Ninject.FeatureDumper
             return null;
         }
 
-        public static bool IsSubclassOfRawGeneric(Type baseType, Type toCheck)
+        private static bool IsSubclassOfRawGeneric(Type baseType, Type toCheck)
         {
             while (toCheck != typeof(object))
             {
@@ -162,7 +162,7 @@ namespace Ninject.FeatureDumper
             return false;
         }
 
-        static bool IsDirectSubclassOfRawGeneric(Type generic, Type toCheck)
+        private static bool IsDirectSubclassOfRawGeneric(Type generic, Type toCheck)
         {
             return toCheck.BaseType != null && generic == (toCheck.BaseType.IsGenericType ? toCheck.BaseType.GetGenericTypeDefinition() : toCheck.BaseType);
         }
