@@ -21,13 +21,20 @@ namespace Ninject.FeatureDumper
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-
+    using Modules;
     using Ninject.Features;
 
     public class FeatureProcessor
     {
+        private readonly BindingReader bindingReader;
+
         private readonly HashSet<Tuple<Type, Type>> chain = new HashSet<Tuple<Type, Type>>();
         private readonly HashSet<FeatureInfo> allFeatures = new HashSet<FeatureInfo>();
+
+        public FeatureProcessor()
+        {
+            this.bindingReader = new BindingReader();
+        }
 
         public Features ProcessAssemblies(IEnumerable<Assembly> assemblies)
         {
@@ -69,34 +76,67 @@ namespace Ninject.FeatureDumper
                 return;
             }
 
-            var constructor = feature.GetConstructors().OrderBy(c => c.GetParameters().Length).FirstOrDefault();
+            var featureInfo = ProcessFeatureInstance(feature);
+            this.allFeatures.Add(featureInfo);
+        }
+
+        private FeatureInfo ProcessFeatureInstance(Type featureType)
+        {
+            var constructor = featureType.GetConstructors().OrderBy(c => c.GetParameters().Length).FirstOrDefault();
 
             Feature instance;
             if (constructor != null)
             {
                 object[] arguments = new object[constructor.GetParameters().Length];
 
-                instance = (Feature)Activator.CreateInstance(feature, arguments);
+                instance = (Feature)Activator.CreateInstance(featureType, arguments);
             }
             else
             {
-                instance = (Feature)Activator.CreateInstance(feature);
+                instance = (Feature)Activator.CreateInstance(featureType);
             }
 
-            var factory = this.FindFactory(feature);
-            var dependencies = FindDependencies(feature);
+            Type factory = this.FindFactory(featureType);
+            var dependencies = FindDependencies(featureType);
 
-            this.allFeatures.Add(new FeatureInfo(feature, factory, dependencies));
+            var featureInfo = new FeatureInfo(featureType, factory, dependencies, FeatureType.Feature);
+            GetNeededFeatures(instance, featureInfo);
+            GetNeededExtensions(instance, featureInfo);
+            GetModules(instance, featureInfo);
 
-            IList<Feature> neededFeatures = instance.NeededFeatures.ToList();
-            foreach (Feature neededFeature in neededFeatures)
+            return featureInfo;
+        }
+
+        private void GetNeededFeatures(Feature ninjectFeature, FeatureInfo featureInfo)
+        {
+            IList<Feature> neededFeatureList = ninjectFeature.NeededFeatures.ToList();
+            foreach (Feature neededFeature in neededFeatureList)
             {
-                Console.WriteLine("needed features:");
-                Console.WriteLine("- " + neededFeature.GetType().Name + "(" + neededFeature.GetType().FullName + ")");
+                FeatureInfo needfeatureInfo = ProcessFeatureInstance(neededFeature.GetType());
+                needfeatureInfo.ChangeFeatureType(FeatureType.NeededFeature);
+                featureInfo.AddDependency(needfeatureInfo);
+            }
+        }
 
-                this.chain.Add(new Tuple<Type, Type>(feature, neededFeature.GetType()));
+        private void GetNeededExtensions(Feature ninjectFeature, FeatureInfo featureInfo)
+        {
+            List<INinjectModule> neededExtensionList = ninjectFeature.NeededExtensions.ToList();
+            foreach (INinjectModule neededExtension in neededExtensionList)
+            {
+                FeatureInfo needExtensionInfo = new FeatureInfo(neededExtension.GetType(), null, null, FeatureType.NeededExtensions);
+                needExtensionInfo.AddDependency(this.bindingReader.GetBindingInformations(neededExtension));
+                featureInfo.AddDependency(needExtensionInfo);
+            }
+        }
 
-                this.ProcessFeature(neededFeature.GetType());
+        private void GetModules(Feature ninjectFeature, FeatureInfo featureInfo)
+        {
+            List<INinjectModule> moduleList = ninjectFeature.Modules.ToList();
+            foreach (INinjectModule module in moduleList)
+            {
+                FeatureInfo moduleInfo = new FeatureInfo(module.GetType(), null, null, FeatureType.Module);
+                moduleInfo.AddDependency(this.bindingReader.GetBindingInformations(module));
+                featureInfo.AddDependency(moduleInfo);
             }
         }
 
