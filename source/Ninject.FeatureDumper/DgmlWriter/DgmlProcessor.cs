@@ -71,7 +71,7 @@ namespace Ninject.FeatureDumper.DgmlWriter
 
                 this.workedFeatureInfo.Add(featureInfo);
 
-                HandleFeatureDependencies(featureInfo, featureInfo.Id);
+                this.HandleFeatureDependencies(featureInfo, featureInfo.Id);
             }
         }
 
@@ -79,7 +79,7 @@ namespace Ninject.FeatureDumper.DgmlWriter
         {
             foreach (FeatureInfo dependency in featureInfo.DependenciesInfo)
             {
-                HandleNode(dependency, sourceElementId);
+                this.HandleNode(dependency, sourceElementId);
             }
         }
 

@@ -24,7 +24,6 @@ namespace Ninject.FeatureDumper
     using Planning;
     using Planning.Bindings;
 
-
     public class ContextMock : IContext
     {
         public ContextMock(IKernel kernel)
@@ -71,6 +70,7 @@ namespace Ninject.FeatureDumper
             {
                 throw new NotImplementedException();
             }
+
             set
             {
                 throw new NotImplementedException();

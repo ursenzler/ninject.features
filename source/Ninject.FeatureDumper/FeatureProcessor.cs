@@ -76,7 +76,7 @@ namespace Ninject.FeatureDumper
                 return;
             }
 
-            var featureInfo = ProcessFeatureInstance(feature);
+            var featureInfo = this.ProcessFeatureInstance(feature);
             this.allFeatures.Add(featureInfo);
         }
 
@@ -100,9 +100,9 @@ namespace Ninject.FeatureDumper
             var dependencies = FindDependencies(featureType);
 
             var featureInfo = new FeatureInfo(featureType, factory, dependencies, FeatureType.Feature);
-            GetNeededFeatures(instance, featureInfo);
-            GetNeededExtensions(instance, featureInfo);
-            GetModules(instance, featureInfo);
+            this.GetNeededFeatures(instance, featureInfo);
+            this.GetNeededExtensions(instance, featureInfo);
+            this.GetModules(instance, featureInfo);
 
             return featureInfo;
         }
@@ -112,7 +112,7 @@ namespace Ninject.FeatureDumper
             IList<Feature> neededFeatureList = ninjectFeature.NeededFeatures.ToList();
             foreach (Feature neededFeature in neededFeatureList)
             {
-                FeatureInfo needfeatureInfo = ProcessFeatureInstance(neededFeature.GetType());
+                FeatureInfo needfeatureInfo = this.ProcessFeatureInstance(neededFeature.GetType());
                 needfeatureInfo.ChangeFeatureType(FeatureType.NeededFeature);
                 featureInfo.AddDependency(needfeatureInfo);
             }

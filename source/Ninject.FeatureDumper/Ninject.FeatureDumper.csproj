@@ -83,6 +83,7 @@
     <Compile Include="DgmlWriter\DgmlColorConfiguration.cs" />
     <Compile Include="DgmlWriter\DgmlProcessor.cs" />
     <Compile Include="DgmlWriter\XElementCreater.cs" />
+    <Compile Include="FeatureInfo.cs" />
     <Compile Include="FeatureProcessor.cs" />
     <Compile Include="Features.cs" />
     <Compile Include="Program.cs" />

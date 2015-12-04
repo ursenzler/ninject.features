@@ -35,7 +35,7 @@ namespace Ninject.FeatureDumper
             IKernel kernel = new StandardKernel();
             module.OnLoad(kernel);
 
-            List<KeyValuePair<Type, ICollection<IBinding>>> typeBindingInfo = GetBindings(kernel, module.Name);
+            List<KeyValuePair<Type, ICollection<IBinding>>> typeBindingInfo = this.GetBindings(kernel, module.Name);
 
             foreach (KeyValuePair<Type, ICollection<IBinding>> typeBinding in typeBindingInfo)
             {
@@ -61,17 +61,15 @@ namespace Ninject.FeatureDumper
 
         private List<KeyValuePair<Type, ICollection<IBinding>>> GetBindings(IKernel kernel, string moduleName)
         {
-            string firstPartofModuleName = moduleName.Substring(0, moduleName.IndexOfAny(new[] {'.'}) + 1);
+            string firstPartofModuleName = moduleName.Substring(0, moduleName.IndexOfAny(new[] { '.' }) + 1);
 
-            List<KeyValuePair<Type, ICollection<IBinding>>> returnvalue = ((Multimap<Type, IBinding>)
-                typeof(KernelBase).GetField("bindings", BindingFlags.NonPublic | BindingFlags.Instance)
+            List<KeyValuePair<Type, ICollection<IBinding>>> returnvalue =
+                ((Multimap<Type, IBinding>)typeof(KernelBase).GetField("bindings", BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(kernel))
                 .Where(k => k.Key.FullName.StartsWith(firstPartofModuleName))
                 .ToList();
 
             return returnvalue;
         }
-
-
     }
 }

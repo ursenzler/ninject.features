@@ -19,10 +19,9 @@ namespace Ninject.FeatureDumper
 {
     using System;
     using System.Diagnostics;
-
+    using System.IO;
     using Appccelerate.CommandLineParser;
     using Appccelerate.IO;
-    using System.IO;
     using DgmlWriter;
 
     public static class Program

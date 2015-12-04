@@ -17,10 +17,7 @@
 
 namespace Ninject.FeatureDumper
 {
-    using System;
     using System.Collections.Generic;
-    using Planning.Bindings;
-    using NullGuard;
 
     public enum FeatureType
     {
@@ -43,97 +40,5 @@ namespace Ninject.FeatureDumper
         public IReadOnlyCollection<FeatureInfo> AllFeatures { get; private set; }
 
         public IReadOnlyCollection<Reference> References { get; private set; }
-    }
-
-    public class FeatureInfo
-    {
-        private readonly List<FeatureInfo> dependenciesInfo;
-        const string GenericIdentificator = "`1";
-        const string GenericSign = "<T>";
-
-        public FeatureInfo(Type feature, [AllowNull]Type factory, [AllowNull]IEnumerable<Type> dependencies, FeatureType featureType)
-        {
-            this.Id = Guid.NewGuid().ToString();
-            this.Feature = feature;
-            this.Factory = factory;
-            this.Dependencies = dependencies;
-            this.FeatureType = featureType;
-            this.dependenciesInfo = new List<FeatureInfo>();
-            this.BindingTarget = BindingTarget.Self;
-        }
-
-        public Type Feature { get; }
-
-        public Type Factory { get; }
-
-        public IEnumerable<Type> Dependencies { get; }
-
-        public FeatureType FeatureType { get; private set; }
-
-        public string Id { get; }
-
-        public List<FeatureInfo> DependenciesInfo => this.dependenciesInfo;
-
-        public BindingTarget BindingTarget { get; private set; }
-
-        public string AssemblyName
-        {
-            get
-            {
-                string assemblyName = this.Feature.ToString();
-                if (IsGenericTyp(assemblyName))
-                {
-                    int pos = assemblyName.IndexOf(GenericIdentificator, StringComparison.Ordinal);
-                    return assemblyName.Substring(0, pos) + GenericSign;
-
-                }
-
-                return assemblyName;
-            }
-        }
-
-        public string Name
-        {
-            get
-            {
-                string name = Feature.Name;
-                if (IsGenericTyp(name))
-                {
-                    return name.Replace(GenericIdentificator, GenericSign);
-                }
-
-                return name;
-            }
-        }
-
-        public string UniqueName => this.Name + "." + this.AssemblyName;
-
-        public void AddDependency(FeatureInfo dependency)
-        {
-            this.dependenciesInfo.Add(dependency);
-        }
-
-        public void AddDependency(List<FeatureInfo> dependencyList)
-        {
-            foreach (FeatureInfo dependency in dependencyList)
-            {
-                this.dependenciesInfo.Add(dependency);
-            }
-        }
-
-        public void SetBindingType(BindingTarget target)
-        {
-            this.BindingTarget = target;
-        }
-
-        public void ChangeFeatureType(FeatureType featureType)
-        {
-            this.FeatureType = featureType;
-        }
-
-        private bool IsGenericTyp(string name)
-        {
-            return name.Contains(GenericIdentificator);
-        }
     }
 }
