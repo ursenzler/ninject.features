@@ -22,6 +22,8 @@ namespace Ninject.FeatureDumper
 
     using Appccelerate.CommandLineParser;
     using Appccelerate.IO;
+    using System.IO;
+    using DgmlWriter;
 
     public static class Program
     {
@@ -34,6 +36,7 @@ namespace Ninject.FeatureDumper
                 bool includeFactories = false;
                 bool includeDependencies = false;
                 AbsoluteFilePath yedPath = @"C:\Program Files (x86)\yWorks\yEd\yEd.exe";
+                string outputFormat = "tgf";
 
                 CommandLineConfiguration commandLineConfiguration = CommandLineParserConfigurator
                     .Create()
@@ -49,6 +52,8 @@ namespace Ninject.FeatureDumper
                             .DescribedBy("Include information about feature dependencies.")
                         .WithNamed("-yed", path => yedPath = path)
                             .DescribedBy("yEd path", @"Path specifing location of yEd. If not specified, the default installation path is used (C:\Program Files (x86)\yWorks\yEd\yEd.exe).")
+                        .WithNamed("format", format => outputFormat = format)
+                            .DescribedBy("format", @"Format define dgml or tfg output. The default is tgf. File extension will automatical change to dgml")
                     .BuildConfiguration();
 
                 var parser = new CommandLineParser(commandLineConfiguration);
@@ -67,10 +72,19 @@ namespace Ninject.FeatureDumper
                 var featureProcessor = new FeatureProcessor();
                 Features features = featureProcessor.ProcessAssemblies(assemblies);
 
-                var tgfWriter = new TgfWriter();
-                tgfWriter.WriteTgfFile(outputPath, features, includeFactories, includeDependencies);
+                if (outputFormat.ToLower() == "dgml")
+                {
+                    outputPath = Path.ChangeExtension(outputPath, ".dgml");
+                    DgmlProcessor dgmlProcessor = new DgmlProcessor();
+                    dgmlProcessor.Write(features, outputPath);
+                }
+                else
+                {
+                    var tgfWriter = new TgfWriter();
+                    tgfWriter.WriteTgfFile(outputPath, features, includeFactories, includeDependencies);
 
-                StartYEd(yedPath, outputPath);
+                    StartYEd(yedPath, outputPath);
+                }
 
                 Console.WriteLine("done output file is " + outputPath);
             }
